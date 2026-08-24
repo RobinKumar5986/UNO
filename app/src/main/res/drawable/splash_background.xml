@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background color matches theme (light/dark aware via colors.xml) -->
+    <item android:drawable="@color/background_light" />
+
+    <!-- Centered logo -->
+    <item
+        android:width="140dp"
+        android:height="140dp"
+        android:gravity="center"
+        android:drawable="@drawable/unologomain" />
+
+</layer-list>
