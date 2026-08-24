@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.UNO" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/accent_red</item>
+        <item name="colorOnPrimary">@color/surface_light</item>
+
+        <item name="colorSecondary">@color/accent_yellow</item>
+        <item name="colorOnSecondary">@color/text_primary_light</item>
+
+        <item name="colorTertiary">@color/accent_green</item>
+        <item name="colorOnTertiary">@color/surface_light</item>
+
+        <item name="android:colorBackground">@color/background_light</item>
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorOnBackground">@color/text_primary_light</item>
+        <item name="colorOnSurface">@color/text_primary_light</item>
+
+        <item name="colorError">@color/color_error</item>
+
+        <item name="android:statusBarColor">@color/background_light</item>
+        <item name="android:navigationBarColor">@color/background_light</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    </style>
+
+    <style name="Theme.UNO" parent="Base.Theme.UNO" />
+</resources>

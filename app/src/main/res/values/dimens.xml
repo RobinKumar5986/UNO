@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Corner radius -->
+    <dimen name="corner_radius_default">12dp</dimen>
+
+    <!-- Elevation -->
+    <dimen name="elevation_card">1dp</dimen>
+    <dimen name="elevation_raised">2dp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="screen_margin">16dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+
+</resources>
