@@ -2,28 +2,28 @@
 <resources>
 
     <!-- Light Mode -->
-    <color name="background_light">#FAFAFA</color>
+    <color name="background_light">#FAF7F2</color>
     <color name="surface_light">#FFFFFF</color>
-    <color name="text_primary_light">#1A1A1A</color>
-    <color name="text_secondary_light">#5C5C5C</color>
-    <color name="divider_light">#E0E0E0</color>
+    <color name="text_primary_light">#2B2320</color>
+    <color name="text_secondary_light">#6B615C</color>
+    <color name="divider_light">#E5DED6</color>
 
     <!-- Dark Mode -->
-    <color name="background_dark">#121212</color>
-    <color name="surface_dark">#1E1E1E</color>
-    <color name="text_primary_dark">#F5F5F5</color>
-    <color name="text_secondary_dark">#B3B3B3</color>
-    <color name="divider_dark">#2C2C2C</color>
+    <color name="background_dark">#171310</color>
+    <color name="surface_dark">#221D19</color>
+    <color name="text_primary_dark">#F2EAE2</color>
+    <color name="text_secondary_dark">#B3A89D</color>
+    <color name="divider_dark">#332B25</color>
 
-    <!-- Accents (shared across modes) -->
-    <color name="accent_red">#E53935</color>
-    <color name="accent_yellow">#FDD835</color>
-    <color name="accent_green">#43A047</color>
-    <color name="accent_blue">#1E88E5</color>
+    <!-- Accents (shared across modes, from logo palette) -->
+    <color name="accent_red">#D9583F</color>
+    <color name="accent_yellow">#E8A93C</color>
+    <color name="accent_green">#6B9E7A</color>
+    <color name="accent_blue">#5C86A8</color>
 
     <!-- Status -->
-    <color name="color_error">#E53935</color>
-    <color name="color_success">#43A047</color>
-    <color name="color_warning">#FDD835</color>
+    <color name="color_error">#C4523B</color>
+    <color name="color_success">#6B9E7A</color>
+    <color name="color_warning">#E0A54A</color>
 
 </resources>

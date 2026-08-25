@@ -27,7 +27,12 @@
             android:name=".MainActivity"
             android:exported="false"
             android:screenOrientation="landscape" />
-
+        <activity
+            android:name=".ide.EditorActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>
