@@ -1,4 +1,4 @@
-package com.kgjr.uno.ide;
+package com.kgjr.uno.screens;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,6 +19,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.kgjr.uno.R;
 import com.kgjr.uno.flash.Stk500Programmer;
 import com.kgjr.uno.flash.Uploader;
+import com.kgjr.uno.ide.ArduinoCompiler;
+import com.kgjr.uno.ide.AvrSdk;
+import com.kgjr.uno.ide.Board;
+import com.kgjr.uno.ide.BuildResult;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
