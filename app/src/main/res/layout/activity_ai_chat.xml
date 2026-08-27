@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#FF000000"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FF1B1F24"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="6dp">
+
+        <ImageView
+            android:id="@+id/chatSiteButton1"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Claude"
+            android:focusable="false"
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_claud"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/chatSiteButton2"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="ChatGPT"
+            android:focusable="false"
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_gpt"
+            app:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/chatSiteButton3"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Gemini"
+            android:focusable="false"
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_gemini"
+            app:tint="@android:color/white" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/chatInsertCodeButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Insert sketch"
+            android:focusable="false"
+            android:src="@drawable/ic_transfer"
+            app:tint="#FFD6E2EA" />
+
+        <ImageButton
+            android:id="@+id/chatCloseButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Close"
+            android:focusable="false"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="#FFD6E2EA" />
+    </LinearLayout>
+
+    <WebView
+        android:id="@+id/chatWebView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>

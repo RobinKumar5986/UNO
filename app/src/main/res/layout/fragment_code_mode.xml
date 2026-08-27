@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,71 +10,181 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#FF1B1F24"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="8dp">
 
-        <Button
-            android:id="@+id/compileButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Compile" />
+        <ImageButton
+            android:id="@+id/toolbarCompileButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Compile"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:src="@drawable/ic_play" />
 
-        <Button
-            android:id="@+id/uploadButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+        <ImageButton
+            android:id="@+id/toolbarUploadButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginStart="8dp"
-            android:text="Upload" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Upload"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:src="@drawable/ic_upload" />
 
-        <Button
-            android:id="@+id/resetButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/aiSiteButton1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Claude"
+            android:focusable="false"
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_claud"
+            app:tint="#FFD6E2EA" />
+
+        <ImageView
+            android:id="@+id/aiSiteButton2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginStart="8dp"
-            android:text="Blink" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="ChatGPT"
+            android:focusable="false"
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_gpt"
+            app:tint="#FFD6E2EA" />
+
+        <ImageView
+            android:id="@+id/aiSiteButton3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Gemini"
+            android:focusable="false"
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_gemini"
+            app:tint="#FFD6E2EA" />
+
+        <ImageButton
+            android:id="@+id/keyboardDoneButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Hide keyboard"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:src="@drawable/ic_keyboard_hide"
+            app:tint="#FFD6E2EA" />
     </LinearLayout>
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/uploadProgress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:max="100"
         android:visibility="gone" />
 
-    <EditText
-        android:id="@+id/sketchEditor"
+    <LinearLayout
+        android:id="@+id/contentRow"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
-        android:fontFamily="monospace"
-        android:gravity="top|start"
-        android:hint="Write your sketch here"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine|textNoSuggestions"
-        android:padding="12dp"
-        android:scrollHorizontally="true"
-        android:textSize="13sp"
-        android:typeface="monospace" />
+        android:layout_weight="1"
+        android:orientation="horizontal">
 
-    <ScrollView
-        android:id="@+id/logScroll"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2"
-        android:background="#FF101418">
+        <FrameLayout
+            android:id="@+id/editorFrame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="62">
 
-        <TextView
-            android:id="@+id/buildLog"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="monospace"
-            android:padding="12dp"
-            android:textColor="#FFD6E2EA"
-            android:textIsSelectable="true"
-            android:textSize="12sp"
-            android:typeface="monospace" />
-    </ScrollView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <com.kgjr.uno.screens.fragments.helpers.CodeGutterView
+                    android:id="@+id/codeGutter"
+                    android:layout_width="52dp"
+                    android:layout_height="match_parent" />
+
+                <com.kgjr.uno.screens.fragments.helpers.CodeEditorView
+                    android:id="@+id/sketchEditor"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#FF101418"
+                    android:fontFamily="monospace"
+                    android:gravity="top|start"
+                    android:hint="Write your sketch here"
+                    android:importantForAutofill="no"
+                    android:inputType="textMultiLine|textNoSuggestions"
+                    android:padding="12dp"
+                    android:scrollHorizontally="false"
+                    android:textColor="#FFD6E2EA"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/transferButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                android:contentDescription="Send code to AI"
+                android:focusable="false"
+                android:src="@drawable/ic_transfer"
+                app:fabSize="mini" />
+        </FrameLayout>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:background="#FF2A2F36"
+            android:clickable="true"
+            android:focusable="false" />
+
+        <FrameLayout
+            android:id="@+id/outputFrame"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="38">
+
+            <ScrollView
+                android:id="@+id/outputPanel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FF101418">
+
+                <TextView
+                    android:id="@+id/buildLog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:padding="12dp"
+                    android:textColor="#FFD6E2EA"
+                    android:textIsSelectable="true"
+                    android:textSize="12sp" />
+            </ScrollView>
+        </FrameLayout>
+    </LinearLayout>
 </LinearLayout>

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
     <uses-permission android:name="android.permission.USB_PERMISSION" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -33,6 +33,12 @@
             android:name=".screens.EditorActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="landscape" />
+
+        <activity
+            android:name=".screens.AiChatActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="landscape" />
     </application>
