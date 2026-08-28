@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="18dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/slider_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textColor="@color/text_primary_light"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/slider_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_value_chip"
+            android:fontFamily="monospace"
+            android:minWidth="52dp"
+            android:paddingStart="10dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
+            android:textAlignment="center"
+            android:textColor="@color/accent_blue"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+    <!--
+        Horizontal padding must be at least half the thumb width, otherwise the thumb is
+        clipped at 0 and at max. maxHeight is what actually sets the track thickness.
+    -->
+    <SeekBar
+        android:id="@+id/slider_seek"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:maxHeight="10dp"
+        android:minHeight="10dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:progressDrawable="@drawable/slider_track"
+        android:splitTrack="false"
+        android:thumb="@drawable/slider_thumb" />
+
+</LinearLayout>

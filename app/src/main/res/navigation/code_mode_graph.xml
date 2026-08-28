@@ -9,5 +9,13 @@
         android:id="@+id/codeModeFragment"
         android:name="com.kgjr.uno.screens.fragments.CodeModeFragment"
         android:label="fragment_code_mode"
-        tools:layout="@layout/fragment_code_mode" />
+        tools:layout="@layout/fragment_code_mode" >
+        <action
+            android:id="@+id/action_codeModeFragment_to_mobileCodeFragment"
+            app:destination="@id/mobileCodeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mobileCodeFragment"
+        android:name="com.kgjr.uno.screens.fragments.MobileCodeFragment"
+        android:label="MobileCodeFragment" />
 </navigation>

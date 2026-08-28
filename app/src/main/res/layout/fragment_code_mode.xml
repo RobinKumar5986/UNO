@@ -185,6 +185,21 @@
                     android:textIsSelectable="true"
                     android:textSize="12sp" />
             </ScrollView>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/nextScreenButton"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                android:contentDescription="Open visual code builder"
+                android:focusable="false"
+                android:src="@drawable/ic_arrow_forward"
+                app:backgroundTint="#F5A623"
+                app:tint="#FFFFFFFF"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Fab.Circle"
+                app:elevation="6dp"
+                app:fabSize="normal" />
         </FrameLayout>
     </LinearLayout>
 </LinearLayout>

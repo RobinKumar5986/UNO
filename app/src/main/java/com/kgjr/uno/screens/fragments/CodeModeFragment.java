@@ -47,6 +47,8 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import androidx.navigation.Navigation;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class CodeModeFragment extends Fragment {
 
@@ -72,7 +74,7 @@ public class CodeModeFragment extends Fragment {
 
     private float dragLastX;
     private boolean busy;
-
+    FloatingActionButton nextScreenButton;
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -134,6 +136,9 @@ public class CodeModeFragment extends Fragment {
             pendingLog.setLength(0);
             scrollLogToBottom();
         }
+        nextScreenButton = view.findViewById(R.id.nextScreenButton);
+        nextScreenButton.setOnClickListener(v ->
+                Navigation.findNavController(v).navigate(R.id.action_codeModeFragment_to_mobileCodeFragment));
     }
 
     @Override

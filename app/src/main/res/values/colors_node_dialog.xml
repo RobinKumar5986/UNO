@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Accent at low opacity, for chips and selected segments on a light surface. -->
+    <color name="accent_blue_soft">#1F5C86A8</color>
+
+</resources>
