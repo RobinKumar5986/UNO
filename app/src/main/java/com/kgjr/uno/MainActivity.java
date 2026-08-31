@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this, true);
         setContentView(R.layout.activity_main);
 
         List<ActionItem> items = new ArrayList<>();

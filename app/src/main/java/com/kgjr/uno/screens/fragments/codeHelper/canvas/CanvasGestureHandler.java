@@ -154,7 +154,7 @@ class CanvasGestureHandler {
             dragging.x = transform.toWorldX(x) - grabOffsetX;
             dragging.y = transform.toWorldY(y) - grabOffsetY;
 
-            overDeleteZone = isDeletable(dragging) && palette.contains(x, y);
+            overDeleteZone = isDeletable(dragging) && isInDeleteZone(x, y);
             candidate = overDeleteZone ? null : graph.findSnapCandidate(
                     dragging, transform.toWorldSize(SNAP_RADIUS_DP * density));
             view.invalidate();
@@ -196,8 +196,8 @@ class CanvasGestureHandler {
 
         if (cancelled) {
             discard(released);
-        } else if (palette.contains(x, y)) {
-            // Dropped back onto the palette: delete it, or return START to where it was.
+        } else if (isInDeleteZone(x, y)) {
+            // Dropped on or past the palette: delete it, or return START to where it was.
             if (isDeletable(released)) graph.remove(released);
             else restore(released);
         } else if (!moved) {
@@ -240,15 +240,18 @@ class CanvasGestureHandler {
         cancelHold();
         holdRunnable = () -> {
             holdRunnable = null;
-            if (moved || dragging != node || !graph.hasConnections(node)) return;
-            graph.disconnect(node);
+            if (moved || dragging != node) return;
+            if (!isDeletable(node)) return;
+
+            graph.remove(node);
             dragging = null;
+            candidate = null;
+            overDeleteZone = false;
             view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
             view.invalidate();
         };
         view.postDelayed(holdRunnable, HOLD_MS);
     }
-
     private void cancelHold() {
         if (holdRunnable == null) return;
         view.removeCallbacks(holdRunnable);
@@ -276,5 +279,13 @@ class CanvasGestureHandler {
             view.invalidate();
             return true;
         }
+    }
+    /**
+     * Delete zone = anything at or left of the palette's right edge, including coordinates that
+     * have run off the screen. RectF.contains() would reject a negative x, so a node dragged
+     * clean past the strip would survive.
+     */
+    private boolean isInDeleteZone(float screenX, float screenY) {
+        return screenX <= palette.bounds().right;
     }
 }

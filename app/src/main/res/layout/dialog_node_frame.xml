@@ -1,57 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-    Root padding leaves room for the card's shadow, which the fixed-size dialog window
-    would otherwise clip.
+    Root padding leaves room for the card's shadow and for the close chip, which deliberately
+    overhangs the card's top-right corner. clipChildren/clipToPadding must stay false or the
+    overhang is cut off.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp">
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:padding="14dp">
 
-    <com.google.android.material.card.MaterialCardView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardBackgroundColor="@color/surface_light"
-        app:cardCornerRadius="26dp"
-        app:cardElevation="14dp"
-        app:strokeColor="@color/divider_light"
-        app:strokeWidth="1dp">
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_marginTop="18dp"
+            android:layout_marginEnd="10dp"
+            app:cardBackgroundColor="@color/surface_light"
+            app:cardCornerRadius="26dp"
+            app:cardElevation="14dp"
+            app:strokeColor="@color/divider_light"
+            app:strokeWidth="1dp">
 
-            <!-- Header -->
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="22dp"
-                android:paddingTop="20dp"
-                android:paddingEnd="14dp"
-                android:paddingBottom="18dp">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <!--
-                    android:tint, not app:tint: this dialog is a plain android.app.Dialog, so
-                    its inflater does not swap in AppCompatImageView and app:tint is ignored.
-                -->
-                <ImageView
-                    android:id="@+id/node_dialog_close"
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_alignParentEnd="true"
-                    android:background="@drawable/bg_icon_button"
-                    android:contentDescription="Close"
-                    android:padding="9dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_close"
-                    android:tint="@color/text_secondary_light" />
-
+                <!-- Header: title only, the close chip lives outside the card body -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toStartOf="@id/node_dialog_close"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingStart="22dp"
+                    android:paddingTop="22dp"
+                    android:paddingEnd="44dp"
+                    android:paddingBottom="18dp">
 
                     <TextView
                         android:id="@+id/node_dialog_title"
@@ -74,56 +64,52 @@
 
                 </LinearLayout>
 
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider_light" />
-
-            <!-- Content -->
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:clipToPadding="false"
-                android:fillViewport="true"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/node_dialog_content"
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingStart="22dp"
-                    android:paddingTop="20dp"
-                    android:paddingEnd="22dp"
-                    android:paddingBottom="20dp" />
+                    android:layout_height="1dp"
+                    android:background="@color/divider_light" />
 
-            </ScrollView>
+                <!--
+                    0dp + weight=1 is what makes this scroll: the ScrollView takes the space the
+                    header leaves, and anything taller than that scrolls. wrap_content here
+                    would size the viewport to the content and scroll nothing.
+                    Do NOT add fillViewport="true".
+                -->
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:clipToPadding="false"
+                    android:overScrollMode="ifContentScrolls"
+                    android:scrollbars="none">
 
-            <!-- Footer -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider_light" />
+                    <LinearLayout
+                        android:id="@+id/node_dialog_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="22dp"
+                        android:paddingTop="20dp"
+                        android:paddingEnd="22dp"
+                        android:paddingBottom="26dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/node_dialog_done"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_margin="18dp"
-                android:letterSpacing="0.01"
-                android:stateListAnimator="@null"
-                android:text="Done"
-                android:textAllCaps="false"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                app:backgroundTint="@color/accent_blue"
-                app:cornerRadius="14dp" />
+                </ScrollView>
 
-        </LinearLayout>
+            </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.card.MaterialCardView>
+
+        <ImageView
+            android:id="@+id/node_dialog_close"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:layout_gravity="top|end"
+            android:contentDescription="Close"
+            android:elevation="18dp"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_close" />
+
+    </FrameLayout>
 
 </FrameLayout>

@@ -17,6 +17,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this, true);
         setTheme(R.style.Theme_UNO);
         setContentView(R.layout.activity_splash);
 
