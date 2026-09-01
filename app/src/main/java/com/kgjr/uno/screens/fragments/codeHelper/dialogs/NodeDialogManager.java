@@ -2,6 +2,7 @@ package com.kgjr.uno.screens.fragments.codeHelper.dialogs;
 
 import android.content.Context;
 
+import com.kgjr.uno.screens.fragments.codeHelper.model.ActionNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.EndNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.RepeatNodeData;
@@ -12,7 +13,7 @@ public class NodeDialogManager {
     public static void show(Context context, CanvasNode node, Runnable onChanged) {
         switch (node.type) {
             case ACTION:
-                EmptyNodeDialog.show(context, "Action");
+                ActionNodeDialog.show(context, (ActionNodeData) node.data, onChanged);
                 break;
             case DECISION:
                 EmptyNodeDialog.show(context, "Decision");
