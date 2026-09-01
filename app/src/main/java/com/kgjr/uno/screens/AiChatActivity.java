@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.kgjr.uno.EdgeToEdge;
 import com.kgjr.uno.R;
 
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class AiChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this, true);
         setContentView(R.layout.activity_ai_chat);
 
         sketch = getIntent().getStringExtra(EXTRA_CODE);

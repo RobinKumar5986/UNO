@@ -17,5 +17,14 @@
     <fragment
         android:id="@+id/mobileCodeFragment"
         android:name="com.kgjr.uno.screens.fragments.MobileCodeFragment"
-        android:label="MobileCodeFragment" />
+        android:label="MobileCodeFragment" >
+        <action
+            android:id="@+id/action_mobileCodeFragment_to_codeExeFragment"
+            app:destination="@id/codeExeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/codeExeFragment"
+        android:name="com.kgjr.uno.screens.fragments.CodeExeFragment"
+        android:label="fragment_code_exe"
+        tools:layout="@layout/fragment_code_exe" />
 </navigation>

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.kgjr.uno.EdgeToEdge;
 import com.kgjr.uno.R;
 
 /**
@@ -22,6 +23,7 @@ public class EditorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this, true);
         setContentView(R.layout.activity_editor);
 
         NavHostFragment navHost = (NavHostFragment)

@@ -1,7 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.kgjr.uno.screens.fragments.codeHelper.canvas.CodeCanvasView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/code_canvas"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_light" />
+    android:layout_height="match_parent">
+
+    <com.kgjr.uno.screens.fragments.codeHelper.canvas.CodeCanvasView
+        android:id="@+id/code_canvas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background_light" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/nextScreenButton"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Open visual code builder"
+        android:focusable="false"
+        android:src="@drawable/ic_arrow_forward"
+        app:backgroundTint="#F5A623"
+        app:tint="#FFFFFFFF"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Fab.Circle"
+        app:elevation="6dp"
+        app:fabSize="normal" />
+
+</FrameLayout>
