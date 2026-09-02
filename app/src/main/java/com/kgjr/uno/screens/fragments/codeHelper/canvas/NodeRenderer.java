@@ -136,7 +136,7 @@ class NodeRenderer {
         canvas.drawRoundRect(rect, corner, corner, borderPaint);
 
         float baseline = rect.centerY() - (labelPaint.descent() + labelPaint.ascent()) / 2f;
-        canvas.drawText(node.type.label, rect.centerX(), baseline, labelPaint);
+        canvas.drawText(NodeText.title(node), rect.centerX(), baseline, labelPaint);
 
         for (ConnectionPoint point : node.type.connectionPoints) {
             PointF position = node.connectionPointPosition(point);

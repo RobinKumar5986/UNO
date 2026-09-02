@@ -6,9 +6,13 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.kgjr.uno.AppConstant;
 import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.Connection;
 import com.kgjr.uno.screens.fragments.codeHelper.model.NodeType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The whole builder surface: palette, nodes, links, pan and zoom. Wiring only — geometry lives
@@ -41,6 +45,16 @@ public class CodeCanvasView extends View {
         this.listener = listener;
     }
 
+    /** Snapshot of the placed nodes, for the parser. */
+    public List<CanvasNode> nodes() {
+        return new ArrayList<>(graph.nodes());
+    }
+
+    /** Snapshot of the committed links, for the parser. */
+    public List<Connection> connections() {
+        return new ArrayList<>(graph.connections());
+    }
+
     @Override
     protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
@@ -48,9 +62,27 @@ public class CodeCanvasView extends View {
 
         if (!seeded && width > 0) {
             seeded = true;
-            float centerX = (palette.bounds().right + width) / 2f;
-            graph.add(createNode(NodeType.START, centerX, dp(START_TOP_DP)));
+            if (!restore()) {
+                float centerX = (palette.bounds().right + width) / 2f;
+                graph.add(createNode(NodeType.START, centerX, dp(START_TOP_DP)));
+            }
         }
+    }
+
+    /** Puts back whatever was on the canvas last time this screen was open. */
+    private boolean restore() {
+        if (AppConstant.canvasNodes.isEmpty()) return false;
+
+        for (CanvasNode node : AppConstant.canvasNodes) graph.add(node);
+        for (Connection connection : AppConstant.canvasConnections) graph.connect(connection);
+        return true;
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        AppConstant.canvasNodes = nodes();
+        AppConstant.canvasConnections = connections();
+        super.onDetachedFromWindow();
     }
 
     /** Builds a node of the given type centred on a world-space point. */
