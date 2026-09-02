@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".screens.fragments.CodeExeFragment"
-    android:background="#2196F3">
+    tools:context=".screens.fragments.CodeExeFragment">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/run_code"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Run code"
+        android:focusable="false"
+        android:src="@drawable/baseline_play_arrow_24"
+        app:backgroundTint="#F5A623"
+        app:tint="#FFFFFFFF"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Fab.Circle"
+        app:elevation="6dp"
+        app:fabSize="normal" />
 
 </FrameLayout>

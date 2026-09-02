@@ -245,13 +245,13 @@ public final class FlowCode {
         for (int i = 0; i < level; i++) sb.append("    ");
     }
 
-    private static long waitMillis(FlowBlock b) {
+    public static long waitMillis(FlowBlock b) {
         if (!(b.data instanceof WaitNodeData)) return 0L;
         WaitNodeData d = (WaitNodeData) b.data;
         return d.hours * 3600000L + d.minutes * 60000L + d.seconds * 1000L + d.millis;
     }
 
-    private static int repeatTimes(FlowBlock b) {
+    public static int repeatTimes(FlowBlock b) {
         return b.data instanceof RepeatNodeData ? Math.max(((RepeatNodeData) b.data).times, 0) : 0;
     }
 
