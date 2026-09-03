@@ -22,6 +22,7 @@ import com.kgjr.uno.adapters.SelectedSensorAdapter;
 import com.kgjr.uno.adapters.SensorGridAdapter;
 import com.kgjr.uno.models.sensors.PhoneSensor;
 import com.kgjr.uno.models.sensors.SensorCatalog;
+import com.kgjr.uno.screens.fragments.sensorHelper.SensorInfoSheet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class SensorsFragment extends Fragment {
 
     private SensorGridAdapter gridAdapter;
     private SelectedSensorAdapter selectedAdapter;
-    private TextView selectedCount;
+
     private View selectedEmpty;
 
     @Nullable
@@ -49,7 +50,6 @@ public class SensorsFragment extends Fragment {
         SensorManager sensorManager = SensorCatalog.sensorManager(requireContext());
         dropUnusableSelections(sensorManager);
 
-        selectedCount = root.findViewById(R.id.selectedSensorCount);
         selectedEmpty = root.findViewById(R.id.selectedSensorEmpty);
 
         setUpGrid(root, sensorManager);
@@ -69,7 +69,7 @@ public class SensorsFragment extends Fragment {
         grid.setHasFixedSize(true);
 
         gridAdapter = new SensorGridAdapter(SensorCatalog.all(), sensorManager,
-                this::onSensorToggled);
+                this::onSensorToggled, this::onSensorInfoRequested);
         grid.setAdapter(gridAdapter);
     }
 
@@ -87,6 +87,10 @@ public class SensorsFragment extends Fragment {
         onSelectionChanged(sensor);
     }
 
+    private void onSensorInfoRequested(PhoneSensor sensor) {
+        SensorInfoSheet.show(requireContext(), sensor);
+    }
+
     private void onSensorRemoved(PhoneSensor sensor) {
         AppConstant.deselectSensor(sensor);
         onSelectionChanged(sensor);
@@ -101,7 +105,6 @@ public class SensorsFragment extends Fragment {
 
     private void updateSelectedSummary() {
         int count = AppConstant.selectedSensors.size();
-        selectedCount.setText(String.valueOf(count));
         selectedEmpty.setVisibility(count == 0 ? View.VISIBLE : View.GONE);
     }
 

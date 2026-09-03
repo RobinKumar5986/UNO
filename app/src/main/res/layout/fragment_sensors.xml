@@ -21,13 +21,11 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/sensors_header_height"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingStart="20dp"
-                android:paddingTop="18dp"
-                android:paddingEnd="20dp"
-                android:paddingBottom="14dp">
+                android:paddingEnd="20dp">
 
                 <ImageView
                     android:layout_width="26dp"
@@ -63,10 +61,6 @@
 
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider_light" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/sensorGrid"
@@ -92,52 +86,12 @@
             android:background="@drawable/bg_side_panel"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingTop="18dp"
-                android:paddingEnd="16dp"
-                android:paddingBottom="14dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/sensors_selected_title"
-                    android:textColor="@color/text_primary_light"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/selectedSensorCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_count_pill"
-                    android:minWidth="24dp"
-                    android:paddingStart="8dp"
-                    android:paddingTop="2dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="2dp"
-                    android:textAlignment="center"
-                    android:textColor="#FFFFFFFF"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    tools:text="1" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider_light" />
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                >
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/selectedSensorList"
@@ -146,7 +100,7 @@
                     android:clipToPadding="false"
                     android:contentDescription="@string/sensors_selected_description"
                     android:paddingStart="14dp"
-                    android:paddingTop="14dp"
+                    android:paddingTop="36dp"
                     android:paddingEnd="14dp"
                     android:paddingBottom="88dp"
                     android:scrollbars="vertical"

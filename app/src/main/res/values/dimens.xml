@@ -8,6 +8,9 @@
     <dimen name="elevation_card">1dp</dimen>
     <dimen name="elevation_raised">2dp</dimen>
 
+    <!-- Shared by the sensor grid header and the side panel header, so both dividers line up -->
+    <dimen name="sensors_header_height">76dp</dimen>
+
     <!-- Spacing -->
     <dimen name="screen_margin">16dp</dimen>
     <dimen name="spacing_small">8dp</dimen>

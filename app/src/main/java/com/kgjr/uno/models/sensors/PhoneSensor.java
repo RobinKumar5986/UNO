@@ -1,6 +1,7 @@
 package com.kgjr.uno.models.sensors;
 
 import android.content.Context;
+import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
 import java.util.ArrayList;
@@ -88,6 +89,22 @@ public class PhoneSensor {
             if (requirement.isSatisfiedBy(manager)) return true;
         }
         return false;
+    }
+
+    /** The hardware sensors actually backing this one, empty when the phone can't support it. */
+    public List<Sensor> resolve(SensorManager manager) {
+        if (manager == null) return Collections.emptyList();
+
+        for (HardwareRequirement requirement : requirements) {
+            if (!requirement.isSatisfiedBy(manager)) continue;
+
+            List<Sensor> resolved = new ArrayList<>();
+            for (int sensorType : requirement.sensorTypes) {
+                resolved.add(manager.getDefaultSensor(sensorType));
+            }
+            return resolved;
+        }
+        return Collections.emptyList();
     }
 
     /** Resolves {@link #imageName} against the drawable folder, or 0 when it isn't there. */

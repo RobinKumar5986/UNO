@@ -1,17 +1,42 @@
 <resources>
     <string name="app_name">UNO</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Sensors screen -->
     <string name="sensors_title">Sensors</string>
     <string name="sensors_subtitle">Pick the phone sensors your program can read. Tap a card to add or remove it.</string>
-    <string name="sensors_selected_title">Selected</string>
     <string name="sensors_selected_empty">No sensors yet.\n\nTap a card on the left to add one.</string>
     <string name="sensors_unavailable">Unavailable</string>
     <string name="sensors_grid_description">Available sensors</string>
     <string name="sensors_selected_description">Sensors you have selected</string>
     <string name="sensors_remove">Remove sensor</string>
     <string name="sensors_next">Continue to the visual code builder</string>
-    <string name="sensors_none_selected">Pick at least one sensor to use in your program.</string>
+
+    <!-- Sensor info sheet -->
+    <string name="sensors_info">Sensor details</string>
+    <string name="sensors_info_close">Close details</string>
+    <string name="sensors_info_outputs">Outputs</string>
+    <string name="sensors_info_hardware">Hardware</string>
+    <string name="sensors_info_status">Status</string>
+    <string name="sensors_info_vendor">Vendor</string>
+    <string name="sensors_info_type">Type</string>
+    <string name="sensors_info_version">Version</string>
+    <string name="sensors_info_max_range">Maximum range</string>
+    <string name="sensors_info_resolution">Resolution</string>
+    <string name="sensors_info_power">Power</string>
+    <string name="sensors_info_min_delay">Fastest rate</string>
+    <string name="sensors_info_max_delay">Slowest rate</string>
+    <string name="sensors_info_reporting">Reporting</string>
+    <string name="sensors_info_wake_up">Wakes the phone</string>
+    <string name="sensors_info_fifo">FIFO reserved / max</string>
+    <string name="sensors_info_dynamic">Dynamic</string>
+    <string name="sensors_info_direct_report">Direct report rate</string>
+    <string name="sensors_info_no_range">No fixed range</string>
+    <string name="sensors_info_not_reported">Not reported</string>
+    <string name="sensors_info_mode_continuous">Continuous</string>
+    <string name="sensors_info_mode_on_change">On change</string>
+    <string name="sensors_info_mode_one_shot">One shot</string>
+    <string name="sensors_info_mode_special">Special trigger</string>
+    <string name="sensors_info_unknown">Unknown</string>
+    <string name="sensors_info_yes">Yes</string>
+    <string name="sensors_info_no">No</string>
 </resources>

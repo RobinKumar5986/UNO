@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.kgjr.uno.AppConstant;
 import com.kgjr.uno.R;
 import com.kgjr.uno.models.sensors.PhoneSensor;
-import com.kgjr.uno.models.sensors.SensorType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,18 +27,24 @@ public class SensorGridAdapter extends RecyclerView.Adapter<SensorGridAdapter.Se
         void onSensorToggled(PhoneSensor sensor);
     }
 
-    /** Cards for sensors the phone can't back are shown, but dimmed and not selectable. */
+    public interface OnSensorInfoRequested {
+        void onSensorInfoRequested(PhoneSensor sensor);
+    }
+
     private static final float UNAVAILABLE_ALPHA = 0.45f;
 
     private final List<PhoneSensor> sensors;
     private final SensorManager sensorManager;
-    private final OnSensorToggled listener;
+    private final OnSensorToggled toggleListener;
+    private final OnSensorInfoRequested infoListener;
 
     public SensorGridAdapter(List<PhoneSensor> sensors, SensorManager sensorManager,
-                             OnSensorToggled listener) {
+                             OnSensorToggled toggleListener,
+                             OnSensorInfoRequested infoListener) {
         this.sensors = new ArrayList<>(sensors);
         this.sensorManager = sensorManager;
-        this.listener = listener;
+        this.toggleListener = toggleListener;
+        this.infoListener = infoListener;
     }
 
     @NonNull
@@ -56,13 +61,6 @@ public class SensorGridAdapter extends RecyclerView.Adapter<SensorGridAdapter.Se
         boolean available = sensor.isAvailable(sensorManager);
 
         holder.name.setText(sensor.displayName);
-        holder.description.setText(sensor.description);
-        holder.channels.setText(sensor.channelSummary());
-
-        holder.typeBadge.setText(sensor.type.label);
-        holder.typeBadge.setBackgroundResource(sensor.type == SensorType.OUTPUT
-                ? R.drawable.bg_sensor_badge_output
-                : R.drawable.bg_sensor_badge_input);
 
         int image = sensor.imageRes(holder.itemView.getContext());
         holder.image.setImageResource(image != 0 ? image : R.drawable.ic_sensors);
@@ -71,11 +69,15 @@ public class SensorGridAdapter extends RecyclerView.Adapter<SensorGridAdapter.Se
 
         if (available) {
             holder.itemView.setOnClickListener(view -> {
-                if (listener != null) listener.onSensorToggled(sensor);
+                if (toggleListener != null) toggleListener.onSensorToggled(sensor);
             });
         } else {
             holder.itemView.setOnClickListener(null);
         }
+
+        holder.infoButton.setOnClickListener(view -> {
+            if (infoListener != null) infoListener.onSensorInfoRequested(sensor);
+        });
     }
 
     private void bindState(SensorViewHolder holder, PhoneSensor sensor, boolean available) {
@@ -105,20 +107,16 @@ public class SensorGridAdapter extends RecyclerView.Adapter<SensorGridAdapter.Se
 
         final ImageView image;
         final TextView name;
-        final TextView description;
-        final TextView channels;
-        final TextView typeBadge;
         final ImageView selectedTick;
+        final ImageView infoButton;
         final TextView unavailableBadge;
 
         SensorViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.sensorImage);
             name = itemView.findViewById(R.id.sensorName);
-            description = itemView.findViewById(R.id.sensorDescription);
-            channels = itemView.findViewById(R.id.sensorChannels);
-            typeBadge = itemView.findViewById(R.id.sensorTypeBadge);
             selectedTick = itemView.findViewById(R.id.sensorSelectedTick);
+            infoButton = itemView.findViewById(R.id.sensorInfoButton);
             unavailableBadge = itemView.findViewById(R.id.sensorUnavailableBadge);
         }
     }
