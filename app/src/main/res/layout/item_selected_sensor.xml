@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One row of the right-hand "Selected" panel. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_selected_sensor"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <FrameLayout
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_sensor_thumb">
+
+        <ImageView
+            android:id="@+id/selectedSensorImage"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            tools:src="@drawable/ic_sensors" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/selectedSensorName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary_light"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Orientation" />
+
+        <TextView
+            android:id="@+id/selectedSensorChannels"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_secondary_light"
+            android:textSize="11sp"
+            tools:text="Azimuth (0–360°)" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/selectedSensorRemove"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_icon_button_light"
+        android:clickable="true"
+        android:contentDescription="@string/sensors_remove"
+        android:focusable="true"
+        android:padding="4dp"
+        android:src="@drawable/ic_remove_small" />
+
+</LinearLayout>

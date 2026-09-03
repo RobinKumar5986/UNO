@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One cell of the sensor grid. The root carries the selected background, so the adapter only
+     has to flip setActivated() on it. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/sensorCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:background="@drawable/bg_sensor_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
+
+    <!-- Fixed height so every card in a row lines up, whatever the description length. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="176dp"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <FrameLayout
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_sensor_thumb">
+
+            <ImageView
+                android:id="@+id/sensorImage"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/ic_sensors" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/sensorName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_primary_light"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="Orientation" />
+
+        <TextView
+            android:id="@+id/sensorDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:lineSpacingExtra="1dp"
+            android:maxLines="2"
+            android:textColor="@color/text_secondary_light"
+            android:textSize="11sp"
+            tools:text="Compass heading of the phone. 0° points to magnetic north." />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/sensorTypeBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_sensor_badge_input"
+                android:paddingStart="7dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="7dp"
+                android:paddingBottom="3dp"
+                android:textColor="@color/text_primary_light"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                tools:text="Input" />
+
+            <TextView
+                android:id="@+id/sensorChannels"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_secondary_light"
+                android:textSize="10sp"
+                tools:text="1 value · 0–360°" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/sensorSelectedTick"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="10dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_check_circle"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/sensorUnavailableBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="10dp"
+        android:text="@string/sensors_unavailable"
+        android:textColor="@color/color_error"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+</FrameLayout>

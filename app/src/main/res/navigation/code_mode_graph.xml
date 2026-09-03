@@ -11,8 +11,8 @@
         android:label="fragment_code_mode"
         tools:layout="@layout/fragment_code_mode" >
         <action
-            android:id="@+id/action_codeModeFragment_to_mobileCodeFragment"
-            app:destination="@id/mobileCodeFragment" />
+            android:id="@+id/action_codeModeFragment_to_sensorsFragment"
+            app:destination="@id/sensorsFragment" />
     </fragment>
     <fragment
         android:id="@+id/mobileCodeFragment"
@@ -27,4 +27,13 @@
         android:name="com.kgjr.uno.screens.fragments.CodeExeFragment"
         android:label="fragment_code_exe"
         tools:layout="@layout/fragment_code_exe" />
+    <fragment
+        android:id="@+id/sensorsFragment"
+        android:name="com.kgjr.uno.screens.fragments.SensorsFragment"
+        android:label="fragment_sensors"
+        tools:layout="@layout/fragment_sensors" >
+        <action
+            android:id="@+id/action_sensorsFragment_to_mobileCodeFragment"
+            app:destination="@id/mobileCodeFragment" />
+    </fragment>
 </navigation>

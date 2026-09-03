@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Accents at low opacity, for chips and thumbnails on a light surface. -->
+    <color name="accent_yellow_soft">#22E8A93C</color>
+    <color name="accent_green_soft">#226B9E7A</color>
+
+    <!-- Card fill once a sensor is selected: background_light warmed towards accent_yellow. -->
+    <color name="sensor_card_selected">#FFFDF6E9</color>
+
+</resources>

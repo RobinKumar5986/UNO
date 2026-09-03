@@ -138,7 +138,7 @@ public class CodeModeFragment extends Fragment {
         }
         nextScreenButton = view.findViewById(R.id.nextScreenButton);
         nextScreenButton.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_codeModeFragment_to_mobileCodeFragment));
+                Navigation.findNavController(v).navigate(R.id.action_codeModeFragment_to_sensorsFragment));
     }
 
     @Override

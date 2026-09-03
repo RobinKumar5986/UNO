@@ -2,4 +2,16 @@
     <string name="app_name">UNO</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Sensors screen -->
+    <string name="sensors_title">Sensors</string>
+    <string name="sensors_subtitle">Pick the phone sensors your program can read. Tap a card to add or remove it.</string>
+    <string name="sensors_selected_title">Selected</string>
+    <string name="sensors_selected_empty">No sensors yet.\n\nTap a card on the left to add one.</string>
+    <string name="sensors_unavailable">Unavailable</string>
+    <string name="sensors_grid_description">Available sensors</string>
+    <string name="sensors_selected_description">Sensors you have selected</string>
+    <string name="sensors_remove">Remove sensor</string>
+    <string name="sensors_next">Continue to the visual code builder</string>
+    <string name="sensors_none_selected">Pick at least one sensor to use in your program.</string>
 </resources>
