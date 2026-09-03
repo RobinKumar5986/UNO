@@ -19,10 +19,25 @@ public class AppConstant {
     public static List<CanvasNode> canvasNodes = new ArrayList<>();
     public static List<Connection> canvasConnections = new ArrayList<>();
 
+    /** Canvas viewport (pinch zoom + pan), kept so the view isn't reset on navigating back. */
+    public static boolean canvasViewportSaved = false;
+    public static float canvasScale = 1f;
+    public static float canvasTranslateX = 0f;
+    public static float canvasTranslateY = 0f;
+
     public static void clearCanvas() {
         canvasNodes = new ArrayList<>();
         canvasConnections = new ArrayList<>();
         generatedCode = "";
         flowTree = new ArrayList<>();
+        clearCanvasViewport();
+    }
+
+    /** Drops the saved zoom/pan so the canvas opens at 1x, centred. */
+    public static void clearCanvasViewport() {
+        canvasViewportSaved = false;
+        canvasScale = 1f;
+        canvasTranslateX = 0f;
+        canvasTranslateY = 0f;
     }
 }

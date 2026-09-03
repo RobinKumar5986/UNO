@@ -16,6 +16,21 @@ public class CanvasTransform {
         return scale;
     }
 
+    public float translateX() {
+        return translateX;
+    }
+
+    public float translateY() {
+        return translateY;
+    }
+
+    /** Restores a previously saved viewport verbatim (scale still clamped to the allowed range). */
+    public void set(float scale, float translateX, float translateY) {
+        this.scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
+        this.translateX = translateX;
+        this.translateY = translateY;
+    }
+
     public void pan(float dx, float dy) {
         translateX += dx;
         translateY += dy;

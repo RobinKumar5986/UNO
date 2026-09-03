@@ -62,6 +62,7 @@ public class CodeCanvasView extends View {
 
         if (!seeded && width > 0) {
             seeded = true;
+            restoreViewport();
             if (!restore()) {
                 float centerX = (palette.bounds().right + width) / 2f;
                 graph.add(createNode(NodeType.START, centerX, dp(START_TOP_DP)));
@@ -78,11 +79,28 @@ public class CodeCanvasView extends View {
         return true;
     }
 
+    /** Puts back the zoom/pan from last time, so navigating away and back doesn't reset it. */
+    private void restoreViewport() {
+        if (!AppConstant.canvasViewportSaved) return;
+
+        transform.set(AppConstant.canvasScale,
+                AppConstant.canvasTranslateX,
+                AppConstant.canvasTranslateY);
+    }
+
     @Override
     protected void onDetachedFromWindow() {
         AppConstant.canvasNodes = nodes();
         AppConstant.canvasConnections = connections();
+        saveViewport();
         super.onDetachedFromWindow();
+    }
+
+    private void saveViewport() {
+        AppConstant.canvasScale = transform.scale();
+        AppConstant.canvasTranslateX = transform.translateX();
+        AppConstant.canvasTranslateY = transform.translateY();
+        AppConstant.canvasViewportSaved = true;
     }
 
     /** Builds a node of the given type centred on a world-space point. */
