@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,7 +58,7 @@ public class SensorsFragment extends Fragment {
         nextScreenButton.setOnClickListener(view -> Navigation.findNavController(view)
                 .navigate(R.id.action_sensorsFragment_to_mobileCodeFragment));
 
-        updateSelectedSummary();
+        updateEmptyState();
         return root;
     }
 
@@ -96,16 +95,16 @@ public class SensorsFragment extends Fragment {
         onSelectionChanged(sensor);
     }
 
-    /** Keeps the grid card, the panel and the count in step after either side edits. */
+    /** Keeps the grid card and the panel in step after either side edits. */
     private void onSelectionChanged(PhoneSensor sensor) {
         gridAdapter.refresh(sensor);
         selectedAdapter.submit(AppConstant.selectedSensors);
-        updateSelectedSummary();
+        updateEmptyState();
     }
 
-    private void updateSelectedSummary() {
-        int count = AppConstant.selectedSensors.size();
-        selectedEmpty.setVisibility(count == 0 ? View.VISIBLE : View.GONE);
+    private void updateEmptyState() {
+        selectedEmpty.setVisibility(
+                AppConstant.selectedSensors.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     /**

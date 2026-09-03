@@ -1,7 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="ShapeAppearanceOverlay.Fab.Circle" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <!-- Text: two colours (primary, secondary) and five sizes, nothing else. -->
+    <style name="TextAppearance.UNO.ScreenTitle" parent="">
+        <item name="android:textColor">@color/text_primary_dark</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="TextAppearance.UNO.SectionHeading" parent="">
+        <item name="android:textColor">@color/text_primary_dark</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.UNO.CardTitle" parent="">
+        <item name="android:textColor">@color/text_primary_dark</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.UNO.ItemTitle" parent="">
+        <item name="android:textColor">@color/text_primary_dark</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.UNO.Value" parent="">
+        <item name="android:textColor">@color/text_primary_dark</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance.UNO.Body" parent="">
+        <item name="android:textColor">@color/text_secondary_dark</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TextAppearance.UNO.Caption" parent="">
+        <item name="android:textColor">@color/text_secondary_dark</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="TextAppearance.UNO.Badge" parent="">
+        <item name="android:textColor">@color/text_primary_dark</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.UNO.Warning" parent="">
+        <item name="android:textColor">@color/color_error</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Widgets -->
+    <style name="Widget.UNO.Fab" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="android:layout_width">@dimen/fab_size</item>
+        <item name="android:layout_height">@dimen/fab_size</item>
+        <item name="android:layout_margin">@dimen/spacing_medium</item>
+        <item name="android:focusable">false</item>
+        <item name="backgroundTint">@color/accent_yellow</item>
+        <item name="tint">@color/text_primary_dark</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.Fab.Circle</item>
+        <item name="elevation">@dimen/elevation_fab</item>
+        <item name="fabSize">normal</item>
+    </style>
+
+    <style name="Widget.UNO.Fab.Mini" parent="Widget.UNO.Fab">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="fabSize">mini</item>
+    </style>
+
+    <style name="Widget.UNO.IconButton" parent="">
+        <item name="android:layout_width">@dimen/icon_button_size</item>
+        <item name="android:layout_height">@dimen/icon_button_size</item>
+        <item name="android:background">@drawable/bg_icon_button_ripple</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:padding">5dp</item>
+    </style>
+
+    <style name="Widget.UNO.Badge" parent="TextAppearance.UNO.Badge">
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="Widget.UNO.Divider" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/divider_dark</item>
+    </style>
+
 </resources>

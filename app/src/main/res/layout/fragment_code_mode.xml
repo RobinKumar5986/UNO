@@ -144,15 +144,11 @@
             </LinearLayout>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                style="@style/Widget.UNO.Fab.Mini"
                 android:id="@+id/transferButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:layout_margin="16dp"
                 android:contentDescription="Send code to AI"
-                android:focusable="false"
-                android:src="@drawable/ic_transfer"
-                app:fabSize="mini" />
+                android:src="@drawable/ic_transfer" />
         </FrameLayout>
 
         <View
@@ -187,19 +183,11 @@
             </ScrollView>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                style="@style/Widget.UNO.Fab"
                 android:id="@+id/nextScreenButton"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
                 android:layout_gravity="bottom|end"
-                android:layout_margin="16dp"
                 android:contentDescription="Open visual code builder"
-                android:focusable="false"
-                android:src="@drawable/ic_arrow_forward"
-                app:backgroundTint="#F5A623"
-                app:tint="#FFFFFFFF"
-                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Fab.Circle"
-                app:elevation="6dp"
-                app:fabSize="normal" />
+                android:src="@drawable/ic_arrow_forward" />
         </FrameLayout>
     </LinearLayout>
 </LinearLayout>

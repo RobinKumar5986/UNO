@@ -7,18 +7,10 @@
     tools:context=".screens.fragments.CodeExeFragment">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        style="@style/Widget.UNO.Fab"
         android:id="@+id/run_code"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
         android:contentDescription="Run code"
-        android:focusable="false"
-        android:src="@drawable/baseline_play_arrow_24"
-        app:backgroundTint="#F5A623"
-        app:tint="#FFFFFFFF"
-        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Fab.Circle"
-        app:elevation="6dp"
-        app:fabSize="normal" />
+        android:src="@drawable/baseline_play_arrow_24" />
 
 </FrameLayout>

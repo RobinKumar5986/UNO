@@ -6,15 +6,14 @@
     android:layout_marginTop="6dp"
     android:background="@drawable/bg_selected_sensor"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="@dimen/spacing_card">
 
     <TextView
         android:id="@+id/infoGroupTitle"
+        style="@style/TextAppearance.UNO.Value"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:textColor="@color/text_primary_light"
-        android:textSize="12sp"
+        android:layout_marginBottom="@dimen/spacing_tiny"
         android:textStyle="bold"
         tools:text="Game Rotation Vector" />
 
@@ -34,7 +33,7 @@
             android:id="@+id/infoGroupColumnEnd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="@dimen/spacing_screen"
             android:layout_weight="1"
             android:orientation="vertical" />
 

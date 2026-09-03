@@ -9,21 +9,19 @@
 
     <TextView
         android:id="@+id/infoRowLabel"
+        style="@style/TextAppearance.UNO.Body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textColor="@color/text_secondary_light"
-        android:textSize="12sp"
         tools:text="Vendor" />
 
     <TextView
         android:id="@+id/infoRowValue"
+        style="@style/TextAppearance.UNO.Value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_weight="1.4"
-        android:textColor="@color/text_primary_light"
-        android:textSize="12sp"
         tools:text="Qualcomm" />
 
 </LinearLayout>

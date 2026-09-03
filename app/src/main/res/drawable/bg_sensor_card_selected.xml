@@ -3,7 +3,7 @@
     android:shape="rectangle">
     <solid android:color="@color/sensor_card_selected" />
     <stroke
-        android:width="2dp"
+        android:width="@dimen/stroke_width_selected"
         android:color="@color/accent_yellow" />
-    <corners android:radius="16dp" />
+    <corners android:radius="@dimen/corner_radius_card" />
 </shape>

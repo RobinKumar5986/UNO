@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Surface with a hairline on its leading edge only, to separate it from the grid. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/divider_light" />
+            <solid android:color="@color/divider_dark" />
         </shape>
     </item>
-    <item android:left="1dp">
+    <item android:left="@dimen/stroke_width">
         <shape android:shape="rectangle">
-            <solid android:color="@color/surface_light" />
+            <solid android:color="@color/surface_dark" />
         </shape>
     </item>
 </layer-list>

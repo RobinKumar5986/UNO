@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One row of the right-hand "Selected" panel. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="@dimen/spacing_small"
     android:background="@drawable/bg_selected_sensor"
     android:gravity="center_vertical"
     android:orientation="horizontal"
@@ -35,37 +34,29 @@
 
         <TextView
             android:id="@+id/selectedSensorName"
+            style="@style/TextAppearance.UNO.ItemTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/text_primary_light"
-            android:textSize="14sp"
-            android:textStyle="bold"
             tools:text="Orientation" />
 
         <TextView
             android:id="@+id/selectedSensorChannels"
+            style="@style/TextAppearance.UNO.Caption"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/text_secondary_light"
-            android:textSize="11sp"
             tools:text="Azimuth (0–360°)" />
 
     </LinearLayout>
 
     <ImageView
         android:id="@+id/selectedSensorRemove"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/bg_icon_button_light"
-        android:clickable="true"
+        style="@style/Widget.UNO.IconButton"
         android:contentDescription="@string/sensors_remove"
-        android:focusable="true"
-        android:padding="4dp"
         android:src="@drawable/ic_remove_small" />
 
 </LinearLayout>

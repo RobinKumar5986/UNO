@@ -18,10 +18,10 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:paddingTop="14dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="14dp">
+        android:paddingStart="@dimen/spacing_screen"
+        android:paddingTop="@dimen/spacing_grid"
+        android:paddingEnd="@dimen/spacing_screen"
+        android:paddingBottom="@dimen/spacing_grid">
 
         <FrameLayout
             android:layout_width="44dp"
@@ -42,71 +42,55 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
+            android:layout_marginStart="@dimen/spacing_grid"
             android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/infoSensorName"
+                style="@style/TextAppearance.UNO.ScreenTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_primary_light"
                 android:textSize="18sp"
-                android:textStyle="bold"
                 tools:text="Orientation" />
 
             <TextView
                 android:id="@+id/infoSensorDescription"
+                style="@style/TextAppearance.UNO.Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:textColor="@color/text_secondary_light"
-                android:textSize="12sp"
                 tools:text="Compass heading of the phone." />
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/infoSensorTypeBadge"
+            style="@style/Widget.UNO.Badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="@dimen/spacing_card"
             android:background="@drawable/bg_sensor_badge_input"
-            android:paddingStart="8dp"
-            android:paddingTop="4dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="4dp"
-            android:textColor="@color/text_primary_light"
-            android:textSize="11sp"
-            android:textStyle="bold"
             tools:text="Input" />
 
         <ImageView
             android:id="@+id/infoSensorClose"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/bg_icon_button_light"
-            android:clickable="true"
+            style="@style/Widget.UNO.IconButton"
+            android:layout_marginStart="@dimen/spacing_small"
             android:contentDescription="@string/sensors_info_close"
-            android:focusable="true"
-            android:padding="5dp"
             android:src="@drawable/ic_remove_small" />
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider_light" />
+    <View style="@style/Widget.UNO.Divider" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingTop="16dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="20dp">
+        android:paddingStart="@dimen/spacing_screen"
+        android:paddingTop="@dimen/spacing_medium"
+        android:paddingEnd="@dimen/spacing_screen"
+        android:paddingBottom="@dimen/spacing_screen">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -114,13 +98,10 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/infoOutputsHeading"
+                style="@style/TextAppearance.UNO.SectionHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/sensors_info_outputs"
-                android:textColor="@color/text_primary_light"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:text="@string/sensors_info_outputs" />
 
             <LinearLayout
                 android:id="@+id/infoOutputsContainer"
@@ -130,14 +111,11 @@
                 android:orientation="vertical" />
 
             <TextView
-                android:id="@+id/infoHardwareHeading"
+                style="@style/TextAppearance.UNO.SectionHeading"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:text="@string/sensors_info_hardware"
-                android:textColor="@color/text_primary_light"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:text="@string/sensors_info_hardware" />
 
             <LinearLayout
                 android:id="@+id/infoHardwareContainer"

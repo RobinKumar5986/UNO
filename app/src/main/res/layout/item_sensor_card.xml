@@ -12,14 +12,14 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="136dp"
+        android:layout_height="@dimen/sensors_card_height"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="@dimen/spacing_card">
 
         <FrameLayout
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="@dimen/sensors_thumb_size"
+            android:layout_height="@dimen/sensors_thumb_size"
             android:background="@drawable/bg_sensor_thumb">
 
             <ImageView
@@ -35,15 +35,13 @@
 
         <TextView
             android:id="@+id/sensorName"
+            style="@style/TextAppearance.UNO.CardTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/spacing_card"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:textColor="@color/text_primary_light"
-            android:textSize="15sp"
-            android:textStyle="bold"
             tools:text="Orientation" />
 
     </LinearLayout>
@@ -61,27 +59,20 @@
 
     <ImageView
         android:id="@+id/sensorInfoButton"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        style="@style/Widget.UNO.IconButton"
         android:layout_gravity="top|end"
         android:layout_margin="5dp"
-        android:background="@drawable/bg_icon_button_light"
-        android:clickable="true"
         android:contentDescription="@string/sensors_info"
-        android:focusable="true"
-        android:padding="5dp"
         android:src="@drawable/ic_info" />
 
     <TextView
         android:id="@+id/sensorUnavailableBadge"
+        style="@style/TextAppearance.UNO.Warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="@dimen/spacing_small"
         android:text="@string/sensors_unavailable"
-        android:textColor="@color/color_error"
-        android:textSize="10sp"
-        android:textStyle="bold"
         android:visibility="gone" />
 
 </FrameLayout>
