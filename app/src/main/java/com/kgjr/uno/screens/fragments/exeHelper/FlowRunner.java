@@ -127,7 +127,13 @@ public final class FlowRunner {
         // Resolved per send, so a command inside a loop picks up a fresh reading each pass.
         if (sensors != null) command = sensors.resolveTokens(command);
 
-        serial.write(command);
+        if (!serial.write(command)) {
+            // The board is gone. Clearing the flag unwinds execute() and lets start()'s wrapper
+            // do the teardown, so onStopped still fires exactly once.
+            log("Stopping: the board is not connected");
+            running.set(false);
+            return;
+        }
         sleep(COMMAND_GAP_MS);
     }
 

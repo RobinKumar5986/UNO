@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CodeExeFragment extends Fragment implements FlowRunner.Listener {
+public class CodeExeFragment extends Fragment
+        implements FlowRunner.Listener, SerialLink.Listener {
 
     private static final String TAG = "CodeExe";
 
@@ -65,7 +66,7 @@ public class CodeExeFragment extends Fragment implements FlowRunner.Listener {
 
         runCode = view.findViewById(R.id.run_code);
 
-        serial = new SerialLink(requireContext(), this::onLog);
+        serial = new SerialLink(requireContext(), this);
         serial.register();
         serial.connect();
 
@@ -175,6 +176,17 @@ public class CodeExeFragment extends Fragment implements FlowRunner.Listener {
     @Override
     public void onLog(String message) {
         Log.d(TAG, message);
+    }
+
+    /**
+     * A dropped cable mid-run leaves the runner walking a flow it can no longer send, so stop it.
+     * Arrives on the serial IO thread; {@link FlowRunner#stop()} is safe from there and its
+     * onStopped is what resets the button.
+     */
+    @Override
+    public void onDisconnected(String reason) {
+        FlowRunner active = runner;
+        if (active != null) active.stop();
     }
 
     /** Called from the runner's own thread, so it hops to the main looper. */

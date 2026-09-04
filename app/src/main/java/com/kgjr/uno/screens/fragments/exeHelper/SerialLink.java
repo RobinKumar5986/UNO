@@ -26,6 +26,9 @@ public class SerialLink implements SerialInputOutputManager.Listener {
 
     public interface Listener {
         void onLog(String message);
+
+        /** The port dropped on its own — a pulled cable, a loose plug. Not a deliberate close. */
+        void onDisconnected(String reason);
     }
 
     private static final String TAG = "SerialLink";
@@ -179,8 +182,11 @@ public class SerialLink implements SerialInputOutputManager.Listener {
 
     @Override
     public void onRunError(Exception e) {
-        log("Connection lost: " + e.getMessage());
+        String reason = "Connection lost: " + e.getMessage();
+        log(reason);
         close();
+
+        if (listener != null) listener.onDisconnected(reason);
     }
 
     private void log(String message) {
