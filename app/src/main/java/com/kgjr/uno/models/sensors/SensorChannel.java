@@ -9,8 +9,8 @@ package com.kgjr.uno.models.sensors;
  */
 public class SensorChannel {
 
-    /** Stable, code-facing name. Used when the channel is referenced from generated code. */
-    public final String key;
+    /** Stable, code-facing key. Used when the channel is referenced from generated code. */
+    public final ChannelKey key;
 
     /** What the UI shows, e.g. "Azimuth". */
     public final String displayName;
@@ -24,7 +24,7 @@ public class SensorChannel {
     /** Inclusive upper bound, or null when the channel is unbounded. */
     public final Float max;
 
-    private SensorChannel(String key, String displayName, String unit, Float min, Float max) {
+    private SensorChannel(ChannelKey key, String displayName, String unit, Float min, Float max) {
         this.key = key;
         this.displayName = displayName;
         this.unit = unit == null ? "" : unit;
@@ -33,13 +33,13 @@ public class SensorChannel {
     }
 
     /** A channel with a known range, e.g. a compass heading of 0–360°. */
-    public static SensorChannel bounded(String key, String displayName, String unit,
+    public static SensorChannel bounded(ChannelKey key, String displayName, String unit,
                                         float min, float max) {
         return new SensorChannel(key, displayName, unit, min, max);
     }
 
     /** A channel with no fixed range, e.g. raw acceleration on one axis. */
-    public static SensorChannel unbounded(String key, String displayName, String unit) {
+    public static SensorChannel unbounded(ChannelKey key, String displayName, String unit) {
         return new SensorChannel(key, displayName, unit, null, null);
     }
 

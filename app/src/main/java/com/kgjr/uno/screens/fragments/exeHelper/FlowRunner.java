@@ -21,13 +21,15 @@ public final class FlowRunner {
     private static final long COMMAND_GAP_MS = 50L;
 
     private final SerialLink serial;
+    private final SensorLiveReadingHelper sensors;
     private final Listener listener;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     private ExecutorService executor;
 
-    public FlowRunner(SerialLink serial, Listener listener) {
+    public FlowRunner(SerialLink serial, SensorLiveReadingHelper sensors, Listener listener) {
         this.serial = serial;
+        this.sensors = sensors;
         this.listener = listener;
     }
 
@@ -35,12 +37,13 @@ public final class FlowRunner {
         return running.get();
     }
 
-    public synchronized void start(List<FlowBlock> tree) {
-        if (running.get()) return;
+    /** False when there was nothing to run, in which case no listener callback follows. */
+    public synchronized boolean start(List<FlowBlock> tree) {
+        if (running.get()) return false;
 
         if (tree == null || tree.isEmpty()) {
             log("Nothing to run. Build the flow first.");
-            return;
+            return false;
         }
 
         running.set(true);
@@ -57,6 +60,7 @@ public final class FlowRunner {
             log("--- Execution finished ---");
             if (listener != null) listener.onStopped();
         });
+        return true;
     }
 
     public synchronized void stop() {
@@ -112,13 +116,16 @@ public final class FlowRunner {
         ActionNodeData data = b.data instanceof ActionNodeData ? (ActionNodeData) b.data : null;
         if (data == null) return;
 
-        if (data.mode == ActionNodeData.Mode.API) {
+        if (data.mode != null && !data.mode.sendsCommand()) {
             log("Skipped: API actions are not supported yet");
             return;
         }
 
         String command = data.command == null ? "" : data.command.trim();
         if (command.isEmpty()) return;
+
+        // Resolved per send, so a command inside a loop picks up a fresh reading each pass.
+        if (sensors != null) command = sensors.resolveTokens(command);
 
         serial.write(command);
         sleep(COMMAND_GAP_MS);

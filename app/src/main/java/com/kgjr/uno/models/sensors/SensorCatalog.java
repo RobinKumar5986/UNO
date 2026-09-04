@@ -25,7 +25,7 @@ public final class SensorCatalog {
             .description("Compass heading of the phone. 0° points to magnetic north and rises clockwise.")
             .type(SensorType.INPUT)
             .image("orientation_sensor")
-            .channel(SensorChannel.bounded("azimuth", "Azimuth", "°", 0f, 360f))
+            .channel(SensorChannel.bounded(ChannelKey.AZIMUTH, "Azimuth", "°", 0f, 360f))
             .requires(Sensor.TYPE_ROTATION_VECTOR)
             .requires(Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_MAGNETIC_FIELD)
             .build();
@@ -56,8 +56,9 @@ public final class SensorCatalog {
     public static PhoneSensor byName(String name) {
         if (name == null) return null;
 
+        String trimmed = name.trim();
         for (PhoneSensor sensor : ALL) {
-            if (sensor.name.equals(name)) return sensor;
+            if (sensor.name.equalsIgnoreCase(trimmed)) return sensor;
         }
         return null;
     }

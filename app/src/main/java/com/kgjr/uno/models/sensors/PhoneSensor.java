@@ -57,9 +57,11 @@ public class PhoneSensor {
         return channels.size();
     }
 
-    public SensorChannel channel(String key) {
+    public SensorChannel channel(ChannelKey key) {
+        if (key == null) return null;
+
         for (SensorChannel channel : channels) {
-            if (channel.key.equals(key)) return channel;
+            if (channel.key == key) return channel;
         }
         return null;
     }

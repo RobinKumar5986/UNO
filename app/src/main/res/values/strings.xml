@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">UNO</string>
 
+    <!-- Execution screen -->
+    <string name="exe_title">Run</string>
+    <string name="exe_subtitle">Live sensor values, and the token that reads each one from an Action.</string>
+    <string name="exe_run">Run code</string>
+    <string name="exe_readouts_empty">No sensors selected.\n\nGo back and pick some to watch them live here.</string>
+    <string name="exe_readout_live">LIVE</string>
+    <string name="exe_readout_waiting">WAITING</string>
+    <string name="exe_readout_no_value">—</string>
+    <string name="exe_readout_copied">Copied %1$s</string>
+
     <!-- Sensors screen -->
     <string name="sensors_title">Sensors</string>
     <string name="sensors_subtitle">Pick the phone sensors your program can read. Tap a card to add or remove it.</string>

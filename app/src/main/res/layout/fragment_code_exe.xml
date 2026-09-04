@@ -1,16 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_dark"
     tools:context=".screens.fragments.CodeExeFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/sensors_header_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/spacing_screen"
+            android:paddingEnd="@dimen/spacing_screen">
+
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_play" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_card"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextAppearance.UNO.ScreenTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/exe_title" />
+
+                <TextView
+                    style="@style/TextAppearance.UNO.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/exe_subtitle" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingStart="@dimen/spacing_grid"
+                android:paddingTop="@dimen/spacing_tiny"
+                android:paddingEnd="@dimen/spacing_grid"
+                android:paddingBottom="88dp"
+                android:scrollbars="vertical">
+
+                <!-- CodeExeFragment fills this with rows of SensorReadoutView cards. -->
+                <LinearLayout
+                    android:id="@+id/exeReadouts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/exeReadoutsEmpty"
+                style="@style/TextAppearance.UNO.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:paddingStart="48dp"
+                android:paddingEnd="48dp"
+                android:paddingBottom="40dp"
+                android:text="@string/exe_readouts_empty"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        style="@style/Widget.UNO.Fab"
         android:id="@+id/run_code"
+        style="@style/Widget.UNO.Fab"
+        android:contentDescription="@string/exe_run"
         android:layout_gravity="bottom|end"
-        android:contentDescription="Run code"
         android:src="@drawable/baseline_play_arrow_24" />
 
 </FrameLayout>

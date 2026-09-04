@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+    Merged into SensorReadoutView, which supplies the card background, padding and orientation.
+-->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:background="@drawable/bg_sensor_thumb">
+
+            <ImageView
+                android:id="@+id/readoutImage"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                tools:src="@drawable/ic_sensors" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/readoutName"
+            style="@style/TextAppearance.UNO.CardTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_small"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Orientation" />
+
+        <TextView
+            android:id="@+id/readoutStatus"
+            style="@style/Widget.UNO.Badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_readout_token"
+            android:text="@string/exe_readout_waiting"
+            android:textColor="@color/text_secondary_dark" />
+
+    </LinearLayout>
+
+    <View
+        style="@style/Widget.UNO.Divider"
+        android:layout_marginTop="@dimen/spacing_card" />
+
+    <LinearLayout
+        android:id="@+id/readoutChannels"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+</merge>

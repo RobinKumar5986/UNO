@@ -4,6 +4,7 @@ public class ActionNodeData implements NodeData  {
 
     public enum Mode {
         COMMAND("Command"),
+        SENSOR("Sensor"),
         API("API");
 
         public final String label;
@@ -18,10 +19,18 @@ public class ActionNodeData implements NodeData  {
             }
             return COMMAND;
         }
+
+        /** Modes whose command text is written out and sent to the board. */
+        public boolean sendsCommand() {
+            return this != API;
+        }
     }
 
     public Mode mode = Mode.COMMAND;
     public String command = "";
+
+    /** Name of the sensor last picked in Sensor mode, so the dialog reopens on it. */
+    public String sensorName = "";
 
     /** What the node draws under its label on the canvas. */
     public String summary() {

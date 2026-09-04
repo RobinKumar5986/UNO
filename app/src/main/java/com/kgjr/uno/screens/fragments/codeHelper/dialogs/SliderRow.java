@@ -48,8 +48,10 @@ class SliderRow {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar bar, int progress, boolean fromUser) {
-                callback.onValue(progress);
+                // While syncing, whichever view drove the change reports the value itself.
                 if (syncing[0]) return;
+                callback.onValue(progress);
+
                 syncing[0] = true;
                 valueView.setText(String.valueOf(progress));
                 // Keep the caret valid; the field may be focused while the user drags.

@@ -301,8 +301,8 @@ public final class FlowCode {
 
                 case ACTION: {
                     ActionNodeData d = b.data instanceof ActionNodeData ? (ActionNodeData) b.data : null;
-                    boolean isCommand = d == null || d.mode != ActionNodeData.Mode.API;
-                    if (isCommand && (d == null || d.command == null || d.command.trim().isEmpty())) {
+                    boolean sendsCommand = d == null || d.mode == null || d.mode.sendsCommand();
+                    if (sendsCommand && (d == null || d.command == null || d.command.trim().isEmpty())) {
                         return "An Action block has no command. Open it and set one.";
                     }
                     break;
