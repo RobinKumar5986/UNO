@@ -106,6 +106,8 @@ public class NodeDialogFrame {
         window.setGravity(Gravity.CENTER);
         window.setBackgroundDrawableResource(android.R.color.transparent);
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+                | WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
 
         WindowManager.LayoutParams attributes = window.getAttributes();
         attributes.dimAmount = DIM_AMOUNT;
