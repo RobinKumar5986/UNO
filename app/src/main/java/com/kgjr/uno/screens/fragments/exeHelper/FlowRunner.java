@@ -29,16 +29,16 @@ public final class FlowRunner {
     private static final float EQUALITY_EPSILON = 0.001f;
 
     private final SerialLink serial;
-    private final SensorLiveReadingHelper sensors;
     private final Listener listener;
+    private final SensorSnapshot snapshot;
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     private ExecutorService executor;
 
     public FlowRunner(SerialLink serial, SensorLiveReadingHelper sensors, Listener listener) {
         this.serial = serial;
-        this.sensors = sensors;
         this.listener = listener;
+        this.snapshot = new SensorSnapshot(sensors, this::log);
     }
 
     public boolean isRunning() {
@@ -54,11 +54,16 @@ public final class FlowRunner {
             return false;
         }
 
+        // Worked out once: the flow cannot change while it runs.
+        snapshot.prepare(tree);
+
         running.set(true);
         executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             log("--- Execution started ---");
+            log("Caching " + snapshot.size() + " sensor value(s) per pass");
             try {
+                snapshot.refresh();
                 execute(tree);
             } catch (Exception e) {
                 log("Execution error: " + e.getMessage());
@@ -102,11 +107,19 @@ public final class FlowRunner {
                     break;
 
                 case REPEAT:
+                    // Re-read at the top of every iteration, so one pass works off one set of
+                    // values but a loop still tracks the sensors as it goes round.
                     if (b.forever) {
-                        while (running.get()) execute(b.body);
+                        while (running.get()) {
+                            snapshot.refresh();
+                            execute(b.body);
+                        }
                     } else {
                         int times = FlowCode.repeatTimes(b);
-                        for (int i = 0; i < times && running.get(); i++) execute(b.body);
+                        for (int i = 0; i < times && running.get(); i++) {
+                            snapshot.refresh();
+                            execute(b.body);
+                        }
                     }
                     break;
 
@@ -133,8 +146,7 @@ public final class FlowRunner {
         String command = data.command == null ? "" : data.command.trim();
         if (command.isEmpty()) return;
 
-        // Resolved per send, so a command inside a loop picks up a fresh reading each pass.
-        if (sensors != null) command = sensors.resolveTokens(command);
+        command = snapshot.resolveTokens(command);
 
         if (!serial.write(command)) {
             // The board is gone. Clearing the flag unwinds execute() and lets start()'s wrapper
@@ -163,14 +175,15 @@ public final class FlowRunner {
             return false;
         }
 
-        // Read per pass, so a decision inside a loop sees a fresh value each time.
-        Float reading = sensors == null ? null : sensors.read(sensor, channel);
+        // This pass's cached value, so the decision agrees with any command that used the same
+        // channel earlier in the same iteration.
+        Float reading = snapshot.read(sensor, channel);
         if (reading == null) {
             log("No reading yet for " + c.token() + ", treated as false");
             return false;
         }
 
-        float left = channel.clamp(reading);
+        float left = reading;
         float right;
         try {
             right = Float.parseFloat(c.value.trim());
