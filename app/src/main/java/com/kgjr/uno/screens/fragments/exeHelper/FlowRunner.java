@@ -1,8 +1,13 @@
 package com.kgjr.uno.screens.fragments.exeHelper;
 
+import com.kgjr.uno.models.sensors.ChannelKey;
+import com.kgjr.uno.models.sensors.PhoneSensor;
+import com.kgjr.uno.models.sensors.SensorCatalog;
+import com.kgjr.uno.models.sensors.SensorChannel;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowBlock;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowCode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.ActionNodeData;
+import com.kgjr.uno.screens.fragments.codeHelper.model.DecisionNodeData;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,6 +24,9 @@ public final class FlowRunner {
 
     /** Breathing room for the board between two commands. */
     private static final long COMMAND_GAP_MS = 50L;
+
+    /** Sensor readings are floats, so == and != need a tolerance rather than an exact match. */
+    private static final float EQUALITY_EPSILON = 0.001f;
 
     private final SerialLink serial;
     private final SensorLiveReadingHelper sensors;
@@ -103,7 +111,8 @@ public final class FlowRunner {
                     break;
 
                 case DECISION:
-                    // No conditions yet, so there is nothing to evaluate or branch on.
+                    if (evaluate(b)) execute(b.body);
+                    else execute(b.elseBody);
                     break;
 
                 default: // START, END
@@ -135,6 +144,53 @@ public final class FlowRunner {
             return;
         }
         sleep(COMMAND_GAP_MS);
+    }
+
+    private boolean evaluate(FlowBlock b) {
+        DecisionNodeData data = b.data instanceof DecisionNodeData ? (DecisionNodeData) b.data : null;
+        if (data == null || !data.condition.isSet()) return false;
+
+        return matches(data.condition);
+    }
+
+    private boolean matches(DecisionNodeData.Condition c) {
+        PhoneSensor sensor = SensorCatalog.byName(c.sensorName);
+        SensorChannel channel = sensor == null
+                ? null : sensor.channel(ChannelKey.fromWireName(c.channelKey));
+
+        if (channel == null) {
+            log("Unknown sensor in condition " + c.expression());
+            return false;
+        }
+
+        // Read per pass, so a decision inside a loop sees a fresh value each time.
+        Float reading = sensors == null ? null : sensors.read(sensor, channel);
+        if (reading == null) {
+            log("No reading yet for " + c.token() + ", treated as false");
+            return false;
+        }
+
+        float left = channel.clamp(reading);
+        float right;
+        try {
+            right = Float.parseFloat(c.value.trim());
+        } catch (NumberFormatException | NullPointerException e) {
+            log("Bad value in condition " + c.expression());
+            return false;
+        }
+
+        switch (c.operator) {
+            case "<":
+                return left < right;
+            case ">":
+                return left > right;
+            case "==":
+                return Math.abs(left - right) < EQUALITY_EPSILON;
+            case "!=":
+                return Math.abs(left - right) >= EQUALITY_EPSILON;
+            default:
+                return false;
+        }
     }
 
     /** Sleeps in slices so Stop takes effect without waiting out a long Wait block. */

@@ -7,6 +7,7 @@ import com.kgjr.uno.screens.fragments.codeHelper.model.ActionNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.Connection;
 import com.kgjr.uno.screens.fragments.codeHelper.model.ConnectionPoint;
+import com.kgjr.uno.screens.fragments.codeHelper.model.DecisionNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.EndNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.NodeType;
 import com.kgjr.uno.screens.fragments.codeHelper.model.RepeatNodeData;
@@ -227,7 +228,7 @@ public final class FlowCode {
                     break;
 
                 case DECISION:
-                    sb.append("IF () {\n");
+                    sb.append("IF (").append(decisionExpression(b)).append(") {\n");
                     write(b.body, sb, indent + 1);
                     if (!b.elseBody.isEmpty()) {
                         indent(sb, indent);
@@ -253,6 +254,10 @@ public final class FlowCode {
 
     public static int repeatTimes(FlowBlock b) {
         return b.data instanceof RepeatNodeData ? Math.max(((RepeatNodeData) b.data).times, 0) : 0;
+    }
+
+    public static String decisionExpression(FlowBlock b) {
+        return b.data instanceof DecisionNodeData ? ((DecisionNodeData) b.data).expression() : "";
     }
 
     // -------------------------------------------------------------- validate
@@ -296,8 +301,23 @@ public final class FlowCode {
     private static String checkBlocks(List<FlowBlock> blocks) {
         for (FlowBlock b : blocks) {
             switch (b.type) {
-                case DECISION:
-                    return "Decision blocks have no conditions yet. Remove them to continue.";
+                case DECISION: {
+                    DecisionNodeData d = b.data instanceof DecisionNodeData ? (DecisionNodeData) b.data : null;
+                    if (d == null || !d.condition.isSet()) {
+                        return "A Decision block has no condition. Open it and set one.";
+                    }
+                    if (!d.condition.hasValue()) {
+                        return "A Decision condition has no value to compare against.";
+                    }
+                    if (b.body.isEmpty() && b.elseBody.isEmpty()) {
+                        return "A Decision block has no branches. Wire Yes or No to the next step.";
+                    }
+                    String yes = checkBlocks(b.body);
+                    if (yes != null) return yes;
+                    String no = checkBlocks(b.elseBody);
+                    if (no != null) return no;
+                    break;
+                }
 
                 case ACTION: {
                     ActionNodeData d = b.data instanceof ActionNodeData ? (ActionNodeData) b.data : null;

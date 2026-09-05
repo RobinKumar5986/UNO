@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.kgjr.uno.screens.fragments.codeHelper.model.ActionNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
+import com.kgjr.uno.screens.fragments.codeHelper.model.DecisionNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.EndNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.RepeatNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.WaitNodeData;
@@ -16,7 +17,7 @@ public class NodeDialogManager {
                 ActionNodeDialog.show(context, (ActionNodeData) node.data, onChanged);
                 break;
             case DECISION:
-                EmptyNodeDialog.show(context, "Decision");
+                DecisionNodeDialog.show(context, (DecisionNodeData) node.data, onChanged);
                 break;
             case WAIT:
                 WaitNodeDialog.show(context, (WaitNodeData) node.data, onChanged);
