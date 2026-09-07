@@ -1,8 +1,11 @@
 package com.kgjr.uno.models.sensors;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +45,19 @@ public class PhoneSensor {
     /** Hardware that has to be present. Any one satisfied requirement makes the sensor usable. */
     public final List<HardwareRequirement> requirements;
 
+    /**
+     * Runtime permission the reading needs, or null when it needs none. Only a handful of
+     * sensors are guarded — the heart rate monitor is the one in the catalog today.
+     */
+    public final String permission;
+
+    /**
+     * True when Android computes the reading from other sensors rather than a chip measuring it.
+     * Gravity, for instance, is the accelerometer with the movement filtered out — there is no
+     * gravity sensor in the phone. Shown in the detail sheet so the distinction is visible.
+     */
+    public final boolean derived;
+
     private PhoneSensor(Builder builder) {
         this.id = UUID.randomUUID().toString();
         this.name = builder.name;
@@ -51,6 +67,8 @@ public class PhoneSensor {
         this.channels = Collections.unmodifiableList(new ArrayList<>(builder.channels));
         this.imageName = builder.imageName;
         this.requirements = Collections.unmodifiableList(new ArrayList<>(builder.requirements));
+        this.permission = builder.permission;
+        this.derived = builder.derived;
     }
 
     public int channelCount() {
@@ -81,6 +99,23 @@ public class PhoneSensor {
             names.append(channel.displayName);
         }
         return count + " · " + names;
+    }
+
+    /**
+     * True when the sensor is guarded by a runtime permission. Hardware presence is a separate
+     * question — see {@link #isAvailable(SensorManager)}.
+     */
+    public boolean needsPermission() {
+        return permission != null;
+    }
+
+    /** True when the sensor needs no permission, or the user has already granted it. */
+    public boolean hasPermission(Context context) {
+        if (permission == null) return true;
+        if (context == null) return false;
+
+        return ContextCompat.checkSelfPermission(context, permission)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     /** True when this phone has the hardware to back the sensor. */
@@ -143,6 +178,8 @@ public class PhoneSensor {
         private String description = "";
         private SensorType type = SensorType.INPUT;
         private String imageName = "";
+        private String permission = null;
+        private boolean derived = false;
 
         private Builder(String name) {
             this.name = name;
@@ -177,6 +214,18 @@ public class PhoneSensor {
         /** Adds one alternative set of hardware that can back this sensor. */
         public Builder requires(int... sensorTypes) {
             this.requirements.add(HardwareRequirement.of(sensorTypes));
+            return this;
+        }
+
+        /** Declares the runtime permission the reading needs, e.g. {@code BODY_SENSORS}. */
+        public Builder permission(String permission) {
+            this.permission = permission;
+            return this;
+        }
+
+        /** Marks the reading as computed by Android rather than measured by a chip. */
+        public Builder derived() {
+            this.derived = true;
             return this;
         }
 

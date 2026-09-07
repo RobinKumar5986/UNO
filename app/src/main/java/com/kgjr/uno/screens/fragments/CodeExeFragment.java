@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -21,6 +23,7 @@ import com.kgjr.uno.screens.fragments.exeHelper.FlowRunner;
 import com.kgjr.uno.screens.fragments.exeHelper.SensorLiveReadingHelper;
 import com.kgjr.uno.screens.fragments.exeHelper.SensorReadoutView;
 import com.kgjr.uno.screens.fragments.exeHelper.SerialLink;
+import com.kgjr.uno.screens.fragments.sensorHelper.SensorPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +47,20 @@ public class CodeExeFragment extends Fragment
 
     private final List<SensorReadoutView> readouts = new ArrayList<>();
     private final Handler refreshHandler = new Handler(Looper.getMainLooper());
+
+    /**
+     * The permission prompt pauses the screen, so the resume that follows would ask again. Once
+     * per visit is enough; a user who declines is left with a card that stays WAITING.
+     */
+    private boolean permissionsRequested;
+
+    /**
+     * Registered as a field, which is where the fragment is still early enough in its lifecycle
+     * to accept one. Fires only when a selected sensor is permission-guarded.
+     */
+    private final ActivityResultLauncher<String[]> permissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            granted -> startSensors());
 
     private final Runnable refreshTick = new Runnable() {
         @Override
@@ -162,8 +179,28 @@ public class CodeExeFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
+
+        // Ask before listening: a guarded sensor registered without its permission reports
+        // nothing, and the prompt's own pause/resume is what brings us back here to start.
+        if (!permissionsRequested) {
+            permissionsRequested = true;
+            if (SensorPermissions.request(
+                    permissionLauncher, requireContext(), AppConstant.selectedSensors)) {
+                return;
+            }
+        }
+
+        startSensors();
+    }
+
+    /** Starts listening and ticking. Called from onResume, or once a permission prompt closes. */
+    private void startSensors() {
         if (sensors != null) sensors.start(AppConstant.selectedSensors);
-        if (!readouts.isEmpty()) refreshHandler.post(refreshTick);
+
+        if (!readouts.isEmpty()) {
+            refreshHandler.removeCallbacks(refreshTick);
+            refreshHandler.post(refreshTick);
+        }
     }
 
     @Override

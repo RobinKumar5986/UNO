@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -22,6 +25,7 @@ import com.kgjr.uno.adapters.SensorGridAdapter;
 import com.kgjr.uno.models.sensors.PhoneSensor;
 import com.kgjr.uno.models.sensors.SensorCatalog;
 import com.kgjr.uno.screens.fragments.sensorHelper.SensorInfoSheet;
+import com.kgjr.uno.screens.fragments.sensorHelper.SensorPermissions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,17 @@ public class SensorsFragment extends Fragment {
     private SelectedSensorAdapter selectedAdapter;
 
     private View selectedEmpty;
+
+    /** The sensor whose permission is being asked for, so the result knows what it answered. */
+    private PhoneSensor awaitingPermission;
+
+    /**
+     * Registered as a field, which is where the fragment is still early enough in its lifecycle
+     * to accept one. Only guarded sensors ever reach it — see {@link SensorPermissions}.
+     */
+    private final ActivityResultLauncher<String[]> permissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            granted -> onPermissionResult());
 
     @Nullable
     @Override
@@ -81,9 +96,36 @@ public class SensorsFragment extends Fragment {
         list.setAdapter(selectedAdapter);
     }
 
+    /**
+     * Selecting a guarded sensor asks for its permission there and then, rather than leaving the
+     * user to find out on the run screen that the card never leaves WAITING.
+     */
     private void onSensorToggled(PhoneSensor sensor) {
-        AppConstant.toggleSensor(sensor);
+        boolean selected = AppConstant.toggleSensor(sensor);
         onSelectionChanged(sensor);
+
+        if (!selected || sensor.hasPermission(requireContext())) return;
+
+        awaitingPermission = sensor;
+        SensorPermissions.request(permissionLauncher, requireContext(), sensor);
+    }
+
+    /**
+     * A denial leaves the sensor selected but unreadable, which reads as a broken card later on,
+     * so drop it and say why.
+     */
+    private void onPermissionResult() {
+        PhoneSensor sensor = awaitingPermission;
+        awaitingPermission = null;
+
+        if (sensor == null || sensor.hasPermission(requireContext())) return;
+
+        AppConstant.deselectSensor(sensor);
+        onSelectionChanged(sensor);
+
+        Toast.makeText(requireContext(),
+                getString(R.string.sensors_permission_denied, sensor.displayName),
+                Toast.LENGTH_LONG).show();
     }
 
     private void onSensorInfoRequested(PhoneSensor sensor) {
@@ -109,14 +151,17 @@ public class SensorsFragment extends Fragment {
 
     /**
      * A sensor picked on an earlier run — or before a catalog change — may not be backed by this
-     * phone. Drop those so the panel never lists something the program can't read.
+     * phone, and a permission granted then may have been revoked in Settings since. Drop those so
+     * the panel never lists something the program can't read.
      */
     private void dropUnusableSelections(SensorManager sensorManager) {
         List<PhoneSensor> usable = new ArrayList<>();
         for (PhoneSensor sensor : AppConstant.selectedSensors) {
-            if (SensorCatalog.byName(sensor.name) != null && sensor.isAvailable(sensorManager)) {
-                usable.add(sensor);
-            }
+            if (SensorCatalog.byName(sensor.name) == null) continue;
+            if (!sensor.isAvailable(sensorManager)) continue;
+            if (!sensor.hasPermission(requireContext())) continue;
+
+            usable.add(sensor);
         }
         AppConstant.selectedSensors = usable;
     }

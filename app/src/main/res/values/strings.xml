@@ -20,6 +20,7 @@
     <string name="sensors_selected_description">Sensors you have selected</string>
     <string name="sensors_remove">Remove sensor</string>
     <string name="sensors_next">Continue to the visual code builder</string>
+    <string name="sensors_permission_denied">%1$s can\'t be read without permission. Grant it in Settings to use this sensor.</string>
 
     <!-- Sensor info sheet -->
     <string name="sensors_info">Sensor details</string>
@@ -27,6 +28,9 @@
     <string name="sensors_info_outputs">Outputs</string>
     <string name="sensors_info_hardware">Hardware</string>
     <string name="sensors_info_status">Status</string>
+    <string name="sensors_info_source">Source</string>
+    <string name="sensors_info_source_direct">Measured directly by the hardware</string>
+    <string name="sensors_info_source_fused">Computed by Android from other sensors</string>
     <string name="sensors_info_vendor">Vendor</string>
     <string name="sensors_info_type">Type</string>
     <string name="sensors_info_version">Version</string>

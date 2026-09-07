@@ -89,6 +89,13 @@ public class SensorInfoSheet {
             return;
         }
 
+        // Whether a chip measures this or Android works it out. Gravity and orientation read like
+        // hardware in the list below, so say it plainly rather than leave it to be inferred.
+        addRow(context, container, R.string.sensors_info_source,
+                context.getString(sensor.derived
+                        ? R.string.sensors_info_source_fused
+                        : R.string.sensors_info_source_direct));
+
         for (Sensor hardware : backing) {
             if (hardware != null) addHardwareGroup(context, container, hardware);
         }

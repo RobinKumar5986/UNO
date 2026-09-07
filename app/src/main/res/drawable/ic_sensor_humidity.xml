@@ -1,0 +1,20 @@
+<!-- A droplet: how much moisture the air is holding. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/accent_blue">
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M12,3 C12,3 5.4,10.2 5.4,14.4 a6.6,6.6 0 0,0 13.2,0 C18.6,10.2 12,3 12,3 z"
+        android:strokeColor="@android:color/white"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1.6" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M9,14.6 a3,3 0 0,0 3,3"
+        android:strokeColor="@android:color/white"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.4" />
+</vector>

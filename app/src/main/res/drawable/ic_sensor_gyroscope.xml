@@ -1,0 +1,42 @@
+<!--
+    A spinning rotor inside its gimbal, with the arrow showing the turn being measured. The rotor
+    is tilted so the icon doesn't read as an eye at card size.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/accent_blue">
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M4.6,12 a7.4,7.4 0 1,0 14.8,0 a7.4,7.4 0 1,0 -14.8,0"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.6" />
+    <group
+        android:pivotX="12"
+        android:pivotY="12"
+        android:rotation="-55">
+        <path
+            android:fillColor="@android:color/transparent"
+            android:pathData="M4.6,12 a7.4,3.1 0 1,0 14.8,0 a7.4,3.1 0 1,0 -14.8,0"
+            android:strokeColor="@android:color/white"
+            android:strokeWidth="1.5" />
+    </group>
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,10.3 a1.7,1.7 0 1,0 0,3.4 a1.7,1.7 0 1,0 0,-3.4" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M17.6,3.4 a9.6,9.6 0 0,1 3,3.6"
+        android:strokeColor="@android:color/white"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.5" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M17.2,6.3 l3.6,0.9 l0.6,-3.6"
+        android:strokeColor="@android:color/white"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="1.5" />
+</vector>

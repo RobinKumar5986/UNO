@@ -1,0 +1,28 @@
+<!-- A barometer dial: air pressure, and the altitude it implies. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@color/accent_blue">
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M3.6,12 a8.4,8.4 0 1,0 16.8,0 a8.4,8.4 0 1,0 -16.8,0"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.6" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M12,12 l4.2,-4.2"
+        android:strokeColor="@android:color/white"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.6" />
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M12,5.4 v1.6 M12,17 v1.6 M5.4,12 h1.6 M17,12 h1.6"
+        android:strokeColor="@android:color/white"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.4" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,10.8 a1.2,1.2 0 1,0 0,2.4 a1.2,1.2 0 1,0 0,-2.4" />
+</vector>

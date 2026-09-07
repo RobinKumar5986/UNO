@@ -4,6 +4,29 @@
     <uses-feature android:name="android.hardware.usb.host" android:required="true" />
     <uses-permission android:name="android.permission.USB_PERMISSION" />
     <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!--
+        For the step counter in SensorCatalog. Android 10 hides that sensor from the sensor list
+        until this is granted, so without it the card reads "Unavailable" on phones that do have
+        the hardware.
+    -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />
+
+    <!--
+        For the heart rate sensor in SensorCatalog. Optional hardware — almost no phone has it,
+        and the sensors screen already greys out cards the phone cannot back.
+
+        Android 16 stopped honouring BODY_SENSORS for apps targeting it and moved the monitor
+        behind READ_HEART_RATE. Note that declaring a health permission brings Play Store policy
+        requirements with it — drop the heart rate sensor from SensorCatalog and both of these
+        lines if that isn't worth it.
+    -->
+    <uses-permission android:name="android.permission.BODY_SENSORS"
+        android:maxSdkVersion="35" />
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-feature android:name="android.hardware.sensor.heartrate" android:required="false" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
