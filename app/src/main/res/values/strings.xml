@@ -53,4 +53,66 @@
     <string name="sensors_info_unknown">Unknown</string>
     <string name="sensors_info_yes">Yes</string>
     <string name="sensors_info_no">No</string>
+
+    <!-- Visual code builder -->
+    <string name="mobile_code_title">Visual Code</string>
+    <string name="mobile_code_subtitle">Drag blocks from the left, join them up, then run the flow.</string>
+    <string name="mobile_code_save">Save project</string>
+    <string name="mobile_code_next">Continue to the run screen</string>
+    <string name="mobile_code_nothing_to_save">Add some blocks before saving.</string>
+
+    <!-- Save project screen -->
+    <string name="save_project_title">Save Project</string>
+    <string name="save_project_subtitle_new">Give this project a name so you can find it again.</string>
+    <string name="save_project_subtitle_update">Updating a saved project. Editing the name renames it.</string>
+    <string name="save_project_name_label">Name</string>
+    <string name="save_project_name_hint">e.g. Tilt lamp</string>
+    <string name="save_project_description_label">Description</string>
+    <string name="save_project_description_hint">What does this project do?</string>
+    <string name="save_project_preview_label">Canvas preview</string>
+    <string name="save_project_preview_empty">Nothing on the canvas yet</string>
+    <string name="save_project_counter">%1$d / %2$d</string>
+    <string name="save_project_summary">%1$d blocks · %2$d links · %3$d sensors</string>
+    <string name="save_project_confirm">Save this project</string>
+    <string name="save_project_name_required">Enter a name first.</string>
+    <string name="save_project_saved">Saved “%1$s”</string>
+    <string name="save_project_failed">Could not save the project. Please try again.</string>
+    <string name="save_project_new_badge">NEW PROJECT</string>
+    <string name="save_project_update_badge">EDITING</string>
+
+    <!-- Saved projects screen -->
+    <string name="saved_projects_title">Saved Projects</string>
+    <string name="saved_projects_subtitle">Tap a project to open it. Tap the info icon for details.</string>
+    <string name="saved_projects_empty">No saved projects yet.\n\nBuild a flow in Code Mode, then use the save button in the builder\'s top bar.</string>
+    <string name="saved_projects_close">Close</string>
+    <string name="saved_projects_list_description">Your saved projects</string>
+    <string name="saved_projects_info">Project details</string>
+    <string name="saved_projects_untitled">Untitled</string>
+    <string name="saved_projects_no_description">No description.</string>
+    <string name="saved_projects_updated">Updated %1$s</string>
+    <string name="saved_projects_loaded">Opened “%1$s”</string>
+    <string name="saved_projects_load_failed">Could not open that project.</string>
+
+    <!-- Project details dialog -->
+    <string name="project_details_created">Created</string>
+    <string name="project_details_updated">Last saved</string>
+    <string name="project_details_blocks">Blocks</string>
+    <string name="project_details_links">Links</string>
+    <string name="project_details_sensors">Sensors</string>
+    <string name="project_details_sketch">Sketch</string>
+    <string name="project_details_sketch_lines">%1$d lines</string>
+    <string name="project_details_id">Project ID</string>
+    <string name="project_details_none">None</string>
+    <string name="project_details_open">Open</string>
+    <string name="project_details_delete">Delete</string>
+    <string name="project_details_delete_title">Delete project?</string>
+    <string name="project_details_delete_message">“%1$s” will be removed from this device. This cannot be undone.</string>
+    <string name="project_details_deleted">Deleted “%1$s”</string>
+    <string name="project_details_delete_failed">Could not delete that project.</string>
+
+    <!-- Replacing the current session -->
+    <string name="project_replace_title">Replace current work?</string>
+    <string name="project_replace_message">You have unsaved blocks or sensors in the editor. Opening “%1$s” will replace them.</string>
+    <string name="project_replace_confirm">Open anyway</string>
+    <string name="project_replace_cancel">Cancel</string>
 </resources>

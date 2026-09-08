@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_dark"
-    tools:context=".screens.fragments.MobileCodeFragment">
+    android:fitsSystemWindows="true"
+    tools:context=".screens.SavedProjectsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +25,8 @@
                 android:layout_width="26dp"
                 android:layout_height="26dp"
                 android:contentDescription="@null"
-                android:src="@drawable/ic_code" />
+                android:src="@drawable/ic_save"
+                app:tint="@color/accent_blue" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -35,51 +37,64 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/mobileCodeTitle"
                     style="@style/TextAppearance.UNO.ScreenTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:text="@string/mobile_code_title" />
+                    android:text="@string/saved_projects_title" />
 
                 <TextView
-                    android:id="@+id/mobileCodeSubtitle"
                     style="@style/TextAppearance.UNO.Body"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:text="@string/mobile_code_subtitle" />
+                    android:text="@string/saved_projects_subtitle" />
 
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/saveProjectButton"
+                android:id="@+id/savedProjectsClose"
                 style="@style/Widget.UNO.IconButton.Large"
-                android:contentDescription="@string/mobile_code_save"
-                android:src="@drawable/ic_save"
-                app:tint="@color/accent_yellow" />
+                android:contentDescription="@string/saved_projects_close"
+                android:src="@drawable/ic_close"
+                app:tint="@color/text_secondary_dark" />
 
         </LinearLayout>
 
         <View style="@style/Widget.UNO.Divider" />
 
-        <com.kgjr.uno.screens.fragments.codeHelper.canvas.CodeCanvasView
-            android:id="@+id/code_canvas"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/background_light" />
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/savedProjectsList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:contentDescription="@string/saved_projects_list_description"
+                android:padding="@dimen/spacing_card"
+                android:scrollbars="vertical"
+                tools:itemCount="4"
+                tools:listitem="@layout/item_project_card" />
+
+            <TextView
+                android:id="@+id/savedProjectsEmpty"
+                style="@style/TextAppearance.UNO.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:paddingStart="@dimen/spacing_large"
+                android:paddingEnd="@dimen/spacing_large"
+                android:text="@string/saved_projects_empty"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </FrameLayout>
 
     </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/nextScreenButton"
-        style="@style/Widget.UNO.Fab"
-        android:layout_gravity="bottom|end"
-        android:contentDescription="@string/mobile_code_next"
-        android:src="@drawable/ic_arrow_forward" />
 
 </FrameLayout>

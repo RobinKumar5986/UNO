@@ -60,6 +60,12 @@
             android:screenOrientation="landscape" />
 
         <activity
+            android:name=".screens.SavedProjectsActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="landscape" />
+
+        <activity
             android:name=".screens.AiChatActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
             android:windowSoftInputMode="adjustResize"

@@ -74,6 +74,10 @@ public class CodeModeFragment extends Fragment {
 
     private float dragLastX;
     private boolean busy;
+
+    /** The sketch as it was last read from or written to the store, to skip no-op saves. */
+    private String loadedSource = "";
+
     FloatingActionButton nextScreenButton;
     @Override
     public void onAttach(@NonNull Context context) {
@@ -119,7 +123,8 @@ public class CodeModeFragment extends Fragment {
         FloatingActionButton transferButton = view.findViewById(R.id.transferButton);
 
         gutter.attach(editor);
-        editor.setText(CodeModeHelper.loadSource(requireContext()));
+        loadedSource = CodeModeHelper.loadSource(requireContext());
+        editor.setText(loadedSource);
         host.setTitle(board.displayName);
 
         setupAiSiteButtons(view);
@@ -137,8 +142,13 @@ public class CodeModeFragment extends Fragment {
             scrollLogToBottom();
         }
         nextScreenButton = view.findViewById(R.id.nextScreenButton);
-        nextScreenButton.setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_codeModeFragment_to_sensorsFragment));
+        nextScreenButton.setOnClickListener(v -> {
+            // The builder's save button reads the sketch from the store, by which point this
+            // fragment's editor is gone.
+            saveSource();
+            Navigation.findNavController(v)
+                    .navigate(R.id.action_codeModeFragment_to_sensorsFragment);
+        });
     }
 
     @Override
@@ -154,13 +164,30 @@ public class CodeModeFragment extends Fragment {
         return CodeFoldManager.expandForCompile(editor.getText());
     }
 
+    /**
+     * Writes the sketch to the store every other screen reads it from, including the project
+     * save. No {@code isAdded()} check: navigating away replaces this fragment, and the added
+     * flag is cleared before {@code onPause} is dispatched, so that guard would skip the save on
+     * the one path that matters. Unchanged text is not written back, which stops a stale editor
+     * in the background from overwriting a project loaded since.
+     */
     private void saveSource() {
-        if (editor == null || !isAdded()) return;
-        CodeModeHelper.saveSource(requireContext(), currentSource());
+        if (editor == null) return;
+
+        Context context = getContext();
+        if (context == null) context = host;
+        if (context == null) return;
+
+        String source = currentSource();
+        if (source.equals(loadedSource)) return;
+
+        CodeModeHelper.saveSource(context, source);
+        loadedSource = source;
     }
 
     @Override
     public void onDestroyView() {
+        saveSource();
         super.onDestroyView();
         editor = null;
         gutter = null;

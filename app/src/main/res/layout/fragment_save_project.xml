@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    tools:context=".screens.fragments.SaveProjectFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/sensors_header_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/spacing_screen"
+            android:paddingEnd="@dimen/spacing_screen">
+
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_save"
+                app:tint="@color/accent_yellow" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_card"
+                android:layout_marginEnd="@dimen/spacing_card"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextAppearance.UNO.ScreenTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/save_project_title" />
+
+                <TextView
+                    android:id="@+id/saveProjectSubtitle"
+                    style="@style/TextAppearance.UNO.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/save_project_subtitle_new" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/saveProjectModeBadge"
+                style="@style/Widget.UNO.Badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_value_chip"
+                android:text="@string/save_project_new_badge"
+                android:textColor="@color/accent_yellow" />
+
+        </LinearLayout>
+
+        <View style="@style/Widget.UNO.Divider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/spacing_screen"
+            android:paddingTop="@dimen/spacing_medium"
+            android:paddingEnd="@dimen/spacing_screen"
+            android:paddingBottom="@dimen/spacing_medium">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/TextAppearance.UNO.SectionHeading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/save_project_preview_label" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="@dimen/spacing_small"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_thumbnail"
+                    android:padding="6dp">
+
+                    <ImageView
+                        android:id="@+id/saveProjectPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/save_project_preview_label"
+                        android:scaleType="fitCenter" />
+
+                    <TextView
+                        android:id="@+id/saveProjectPreviewEmpty"
+                        style="@style/TextAppearance.UNO.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/save_project_preview_empty"
+                        android:textColor="@color/text_secondary_light"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/saveProjectSummary"
+                    style="@style/TextAppearance.UNO.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_small"
+                    tools:text="6 blocks · 5 links · 2 sensors" />
+
+            </LinearLayout>
+
+            <ScrollView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/spacing_large"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:paddingBottom="80dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.UNO.SectionHeading"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/save_project_name_label" />
+
+                        <TextView
+                            android:id="@+id/saveProjectNameCounter"
+                            style="@style/TextAppearance.UNO.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="0 / 15" />
+
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/saveProjectName"
+                        style="@style/Widget.UNO.TextField"
+                        android:layout_marginTop="@dimen/spacing_small"
+                        android:hint="@string/save_project_name_hint"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapSentences"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        tools:ignore="Autofill" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_medium"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/TextAppearance.UNO.SectionHeading"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/save_project_description_label" />
+
+                        <TextView
+                            android:id="@+id/saveProjectDescriptionCounter"
+                            style="@style/TextAppearance.UNO.Caption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="0 / 100" />
+
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/saveProjectDescription"
+                        style="@style/Widget.UNO.TextField"
+                        android:layout_height="96dp"
+                        android:layout_marginTop="@dimen/spacing_small"
+                        android:gravity="top|start"
+                        android:hint="@string/save_project_description_hint"
+                        android:imeOptions="actionDone"
+                        android:inputType="textMultiLine|textCapSentences"
+                        android:maxLines="4"
+                        tools:ignore="Autofill" />
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/saveProjectConfirm"
+        style="@style/Widget.UNO.Fab"
+        android:layout_gravity="bottom|end"
+        android:contentDescription="@string/save_project_confirm"
+        android:src="@drawable/ic_check_circle" />
+
+</FrameLayout>

@@ -24,6 +24,16 @@ public class CanvasTransform {
         return translateY;
     }
 
+    /**
+     * Skips the interactive zoom limits, for off-screen rendering where a large flow has to
+     * shrink further than a person is allowed to pinch.
+     */
+    void setExact(float scale, float translateX, float translateY) {
+        this.scale = scale;
+        this.translateX = translateX;
+        this.translateY = translateY;
+    }
+
     /** Restores a previously saved viewport verbatim (scale still clamped to the allowed range). */
     public void set(float scale, float translateX, float translateY) {
         this.scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));

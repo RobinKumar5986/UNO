@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# Saved projects are Gson documents read back by reflection, so their field names have to
+# survive shrinking. Without this, enabling minification would make every existing .json
+# in filesDir/projects unreadable.
+-keep class com.kgjr.uno.models.project.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+-dontwarn sun.misc.**

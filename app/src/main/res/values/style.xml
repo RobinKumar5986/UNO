@@ -87,6 +87,26 @@
         <item name="android:padding">5dp</item>
     </style>
 
+    <style name="Widget.UNO.IconButton.Large" parent="Widget.UNO.IconButton">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:padding">9dp</item>
+    </style>
+
+    <style name="Widget.UNO.TextField" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_text_field</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textColor">@color/text_primary_dark</item>
+        <item name="android:textColorHint">@color/text_secondary_dark</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+
     <style name="Widget.UNO.Badge" parent="TextAppearance.UNO.Badge">
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>

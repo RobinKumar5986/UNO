@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/spacing_screen"
+    android:paddingTop="@dimen/spacing_screen"
+    android:paddingEnd="@dimen/spacing_screen"
+    android:paddingBottom="@dimen/spacing_small">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/detailsName"
+                style="@style/TextAppearance.UNO.CardTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Tilt lamp" />
+
+            <TextView
+                android:id="@+id/detailsDescription"
+                style="@style/TextAppearance.UNO.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                tools:text="Turns the lamp on when the phone is tilted past 45 degrees." />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/detailsDelete"
+            style="@style/Widget.UNO.IconButton.Large"
+            android:layout_marginStart="@dimen/spacing_card"
+            android:contentDescription="@string/project_details_delete"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/accent_red" />
+
+    </LinearLayout>
+
+    <View
+        style="@style/Widget.UNO.Divider"
+        android:layout_marginTop="@dimen/spacing_card"
+        android:layout_marginBottom="@dimen/spacing_card" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/detailsBlocks"
+                layout="@layout/item_project_detail_row" />
+
+            <include
+                android:id="@+id/detailsLinks"
+                layout="@layout/item_project_detail_row" />
+
+            <include
+                android:id="@+id/detailsSensors"
+                layout="@layout/item_project_detail_row" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_medium"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/detailsSketch"
+                layout="@layout/item_project_detail_row" />
+
+            <include
+                android:id="@+id/detailsCreated"
+                layout="@layout/item_project_detail_row" />
+
+            <include
+                android:id="@+id/detailsUpdated"
+                layout="@layout/item_project_detail_row" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        style="@style/Widget.UNO.Divider"
+        android:layout_marginTop="@dimen/spacing_card"
+        android:layout_marginBottom="@dimen/spacing_small" />
+
+    <TextView
+        style="@style/TextAppearance.UNO.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/project_details_id" />
+
+    <TextView
+        android:id="@+id/detailsId"
+        style="@style/TextAppearance.UNO.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:textIsSelectable="true"
+        tools:text="9f1c2e64-1b2a-4c0e-9b21-7a3f0d5e8c11" />
+
+</LinearLayout>

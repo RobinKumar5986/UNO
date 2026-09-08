@@ -17,10 +17,14 @@
     <fragment
         android:id="@+id/mobileCodeFragment"
         android:name="com.kgjr.uno.screens.fragments.MobileCodeFragment"
-        android:label="MobileCodeFragment" >
+        android:label="fragment_mobile_code"
+        tools:layout="@layout/fragment_mobile_code" >
         <action
             android:id="@+id/action_mobileCodeFragment_to_codeExeFragment"
             app:destination="@id/codeExeFragment" />
+        <action
+            android:id="@+id/action_mobileCodeFragment_to_saveProjectFragment"
+            app:destination="@id/saveProjectFragment" />
     </fragment>
     <fragment
         android:id="@+id/codeExeFragment"
@@ -36,4 +40,9 @@
             android:id="@+id/action_sensorsFragment_to_mobileCodeFragment"
             app:destination="@id/mobileCodeFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/saveProjectFragment"
+        android:name="com.kgjr.uno.screens.fragments.SaveProjectFragment"
+        android:label="fragment_save_project"
+        tools:layout="@layout/fragment_save_project" />
 </navigation>

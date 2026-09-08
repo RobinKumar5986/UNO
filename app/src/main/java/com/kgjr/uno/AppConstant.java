@@ -1,5 +1,7 @@
 package com.kgjr.uno;
 
+import android.graphics.Bitmap;
+
 import com.kgjr.uno.models.sensors.PhoneSensor;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowBlock;
 import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
@@ -67,5 +69,56 @@ public class AppConstant {
 
     public static void clearSensors() {
         selectedSensors = new ArrayList<>();
+    }
+
+    /**
+     * Id of the project being edited, or null when this is unsaved work. Saving with an id set
+     * updates that project in place; saving without one mints a new id.
+     */
+    public static String currentProjectId = null;
+
+    /** Name and description of the current project, so the save screen reopens filled in. */
+    public static String currentProjectName = "";
+    public static String currentProjectDescription = "";
+
+    /** When the current project was first saved, so an update doesn't reset it. */
+    public static long currentProjectCreatedAt = 0L;
+
+    /**
+     * Canvas snapshot handed from the builder to the save screen. Held here rather than passed
+     * as a navigation argument because a bitmap is far too big for a Bundle.
+     */
+    public static Bitmap pendingThumbnail = null;
+
+    public static boolean isEditingSavedProject() {
+        return currentProjectId != null && !currentProjectId.isEmpty();
+    }
+
+    /** Forgets which project is open, without touching the canvas, code or sensors. */
+    public static void clearCurrentProject() {
+        currentProjectId = null;
+        currentProjectName = "";
+        currentProjectDescription = "";
+        currentProjectCreatedAt = 0L;
+        releaseThumbnail();
+    }
+
+    /**
+     * Drops the reference rather than recycling: the save screen may still be showing this
+     * bitmap when the write finishes, and drawing a recycled bitmap throws.
+     */
+    public static void releaseThumbnail() {
+        pendingThumbnail = null;
+    }
+
+    /** A canvas with nothing but the seeded Start node, and no sensors, counts as empty. */
+    public static boolean hasWorkInProgress() {
+        return canvasNodes.size() > 1 || !selectedSensors.isEmpty();
+    }
+
+    public static void startNewProject() {
+        clearCanvas();
+        clearSensors();
+        clearCurrentProject();
     }
 }

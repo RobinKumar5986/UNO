@@ -13,7 +13,13 @@ public class CanvasNode {
     public NodeData data;
 
     public CanvasNode(NodeType type, float x, float y, float width, float height, NodeData data) {
-        this.id = UUID.randomUUID().toString();
+        this(UUID.randomUUID().toString(), type, x, y, width, height, data);
+    }
+
+    /** Rebuilds a node that already has an id, for loading a saved project. */
+    public CanvasNode(String id, NodeType type, float x, float y, float width, float height,
+                      NodeData data) {
+        this.id = id == null || id.isEmpty() ? UUID.randomUUID().toString() : id;
         this.type = type;
         this.x = x;
         this.y = y;

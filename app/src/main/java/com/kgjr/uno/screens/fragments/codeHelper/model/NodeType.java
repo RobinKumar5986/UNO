@@ -44,4 +44,27 @@ public enum NodeType {
         this.label = label;
         this.connectionPoints = connectionPoints;
     }
+
+    /**
+     * The shared point instance with this id, or null. The canvas and the parser compare points
+     * with {@code ==}, so a link rebuilt from a saved project has to carry the same object the
+     * enum holds, not an equal copy.
+     */
+    public ConnectionPoint pointById(String id) {
+        if (id == null) return null;
+        for (ConnectionPoint point : connectionPoints) {
+            if (point.id.equals(id)) return point;
+        }
+        return null;
+    }
+
+    /** Parses a stored {@code name()}, falling back to ACTION rather than throwing. */
+    public static NodeType fromName(String name) {
+        if (name != null) {
+            for (NodeType type : values()) {
+                if (type.name().equals(name)) return type;
+            }
+        }
+        return ACTION;
+    }
 }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_small"
+    android:background="@drawable/bg_project_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="112dp"
+        android:background="@drawable/bg_thumbnail">
+
+        <ImageView
+            android:id="@+id/projectThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:padding="4dp"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/projectThumbnailEmpty"
+            style="@style/TextAppearance.UNO.Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/save_project_preview_empty"
+            android:textColor="@color/text_secondary_light"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/projectName"
+                style="@style/TextAppearance.UNO.ItemTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Tilt lamp" />
+
+            <TextView
+                android:id="@+id/projectUpdated"
+                style="@style/TextAppearance.UNO.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Updated 9 Sep 2026, 14:02" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/projectInfo"
+            style="@style/Widget.UNO.IconButton.Large"
+            android:layout_marginStart="@dimen/spacing_small"
+            android:contentDescription="@string/saved_projects_info"
+            android:src="@drawable/ic_info"
+            app:tint="@color/text_secondary_dark" />
+
+    </LinearLayout>
+
+</LinearLayout>
