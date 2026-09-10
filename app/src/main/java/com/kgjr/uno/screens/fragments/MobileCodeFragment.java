@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -27,6 +29,7 @@ import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.Connection;
 import com.kgjr.uno.screens.fragments.codeHelper.model.EndNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.NodeType;
+import com.kgjr.uno.screens.fragments.dataHelper.canvas.DataCanvasView;
 
 import java.util.List;
 
@@ -35,8 +38,15 @@ public class MobileCodeFragment extends Fragment {
     private static final String TAG = "MobileCode";
 
     private CodeCanvasView canvas;
+    private DataCanvasView dataCanvas;
     private TextView title;
     private TextView subtitle;
+
+    private ImageView headerIcon;
+    private ImageView railFlowButton;
+    private ImageView railDataButton;
+
+    private boolean showingData;
 
     @Nullable
     @Override
@@ -47,8 +57,17 @@ public class MobileCodeFragment extends Fragment {
         canvas = root.findViewById(R.id.code_canvas);
         canvas.setOnCanvasNodeListener(this::onNodeTapped);
 
+        dataCanvas = root.findViewById(R.id.data_canvas);
+
+        headerIcon = root.findViewById(R.id.mobileCodeIcon);
         title = root.findViewById(R.id.mobileCodeTitle);
         subtitle = root.findViewById(R.id.mobileCodeSubtitle);
+
+        railFlowButton = root.findViewById(R.id.railFlowButton);
+        railDataButton = root.findViewById(R.id.railDataButton);
+        railFlowButton.setOnClickListener(view -> showCanvas(false));
+        railDataButton.setOnClickListener(view -> showCanvas(true));
+        showCanvas(showingData);
 
         ImageView saveButton = root.findViewById(R.id.saveProjectButton);
         saveButton.setOnClickListener(this::openSaveScreen);
@@ -68,14 +87,51 @@ public class MobileCodeFragment extends Fragment {
     @Override
     public void onDestroyView() {
         canvas = null;
+        dataCanvas = null;
+        headerIcon = null;
         title = null;
         subtitle = null;
+        railFlowButton = null;
+        railDataButton = null;
         super.onDestroyView();
+    }
+
+    /** Swaps the canvases in place, so the flow graph keeps its nodes and viewport. */
+    private void showCanvas(boolean data) {
+        if (canvas == null || dataCanvas == null) return;
+
+        showingData = data;
+
+        canvas.setVisibility(data ? View.GONE : View.VISIBLE);
+        dataCanvas.setVisibility(data ? View.VISIBLE : View.GONE);
+
+        markRailButton(railFlowButton, !data);
+        markRailButton(railDataButton, data);
+
+        showOpenProject();
+    }
+
+    private void markRailButton(ImageView button, boolean active) {
+        if (button == null) return;
+
+        button.setSelected(active);
+        ImageViewCompat.setImageTintList(button, ContextCompat.getColorStateList(
+                requireContext(), active ? R.color.accent_yellow : R.color.text_secondary_dark));
     }
 
     /** The header doubles as the "which project am I in" indicator. */
     private void showOpenProject() {
         if (title == null || subtitle == null) return;
+
+        if (headerIcon != null) {
+            headerIcon.setImageResource(showingData ? R.drawable.ic_data_chart : R.drawable.ic_code);
+        }
+
+        if (showingData) {
+            title.setText(R.string.data_view_title);
+            subtitle.setText(R.string.data_view_subtitle);
+            return;
+        }
 
         if (AppConstant.isEditingSavedProject()
                 && !AppConstant.currentProjectName.trim().isEmpty()) {

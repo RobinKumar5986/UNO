@@ -19,6 +19,13 @@
     <dimen name="stroke_width">1dp</dimen>
     <dimen name="stroke_width_selected">2dp</dimen>
 
+    <!-- Right-edge icon rail: one button per canvas, room for more later -->
+    <dimen name="canvas_rail_padding">6dp</dimen>
+    <dimen name="canvas_rail_item">40dp</dimen>
+    <dimen name="canvas_rail_item_padding">9dp</dimen>
+    <dimen name="canvas_rail_gap">4dp</dimen>
+    <dimen name="canvas_rail_lift">20dp</dimen>
+
     <!-- Shared by the sensor grid header and the side panel header, so both dividers line up -->
     <dimen name="sensors_header_height">76dp</dimen>
     <dimen name="sensors_card_height">136dp</dimen>

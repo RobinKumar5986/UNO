@@ -21,6 +21,7 @@
             android:paddingEnd="@dimen/spacing_screen">
 
             <ImageView
+                android:id="@+id/mobileCodeIcon"
                 android:layout_width="26dp"
                 android:layout_height="26dp"
                 android:contentDescription="@null"
@@ -66,12 +67,64 @@
 
         <View style="@style/Widget.UNO.Divider" />
 
-        <com.kgjr.uno.screens.fragments.codeHelper.canvas.CodeCanvasView
-            android:id="@+id/code_canvas"
+        <FrameLayout
+            android:id="@+id/canvasContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/background_light" />
+            android:layout_weight="1">
+
+            <com.kgjr.uno.screens.fragments.codeHelper.canvas.CodeCanvasView
+                android:id="@+id/code_canvas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background_light" />
+
+            <com.kgjr.uno.screens.fragments.dataHelper.canvas.DataCanvasView
+                android:id="@+id/data_canvas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <!-- Icon rail docked to the right edge; more canvases get another button here. -->
+            <LinearLayout
+                android:id="@+id/canvasModeRail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginBottom="@dimen/canvas_rail_lift"
+                android:background="@drawable/bg_canvas_rail"
+                android:elevation="@dimen/elevation_fab"
+                android:orientation="vertical"
+                android:padding="@dimen/canvas_rail_padding">
+
+                <ImageView
+                    android:id="@+id/railFlowButton"
+                    android:layout_width="@dimen/canvas_rail_item"
+                    android:layout_height="@dimen/canvas_rail_item"
+                    android:background="@drawable/bg_canvas_rail_item"
+                    android:clickable="true"
+                    android:contentDescription="@string/rail_flow"
+                    android:focusable="true"
+                    android:padding="@dimen/canvas_rail_item_padding"
+                    android:src="@drawable/ic_flow_tree"
+                    app:tint="@color/accent_yellow" />
+
+                <ImageView
+                    android:id="@+id/railDataButton"
+                    android:layout_width="@dimen/canvas_rail_item"
+                    android:layout_height="@dimen/canvas_rail_item"
+                    android:layout_marginTop="@dimen/canvas_rail_gap"
+                    android:background="@drawable/bg_canvas_rail_item"
+                    android:clickable="true"
+                    android:contentDescription="@string/rail_data"
+                    android:focusable="true"
+                    android:padding="@dimen/canvas_rail_item_padding"
+                    android:src="@drawable/ic_data_chart"
+                    app:tint="@color/text_secondary_dark" />
+
+            </LinearLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
 

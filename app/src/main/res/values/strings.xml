@@ -61,6 +61,14 @@
     <string name="mobile_code_next">Continue to the run screen</string>
     <string name="mobile_code_nothing_to_save">Add some blocks before saving.</string>
 
+    <!-- Data canvas (right-edge rail) -->
+    <string name="data_view_title">Data View</string>
+    <string name="data_view_subtitle">Lay out how your sensor data is displayed.</string>
+    <string name="rail_flow">Flow canvas</string>
+    <string name="rail_data">Data view</string>
+    <string name="data_canvas_empty">Empty canvas</string>
+    <string name="data_canvas_empty_hint">Data widgets will live here.</string>
+
     <!-- Save project screen -->
     <string name="save_project_title">Save Project</string>
     <string name="save_project_subtitle_new">Give this project a name so you can find it again.</string>
