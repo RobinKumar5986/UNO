@@ -30,7 +30,13 @@ public final class TriggerFormats {
         }
 
         String payload = PayloadFormat.problemOf(data.payload);
-        return payload == null ? null : "Payload: " + payload;
+        if (payload != null) return "Payload: " + payload;
+
+        String sendStart = Escapes.firstProblem(data.sendStartMarker);
+        if (sendStart != null) return "Send start marker: " + sendStart;
+
+        String sendEnd = Escapes.firstProblem(data.sendEndMarker);
+        return sendEnd == null ? null : "Send end marker: " + sendEnd;
     }
 
     /**

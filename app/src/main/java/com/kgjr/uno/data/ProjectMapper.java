@@ -90,6 +90,8 @@ public final class ProjectMapper {
             dto.receiveStartMarker = data.startMarker;
             dto.receiveEndMarker = data.endMarker;
             dto.receivePayload = data.payload;
+            dto.receiveSendStartMarker = data.sendStartMarker;
+            dto.receiveSendEndMarker = data.sendEndMarker;
         }
         return dto;
     }
@@ -175,6 +177,8 @@ public final class ProjectMapper {
             receive.startMarker = text(dto.receiveStartMarker);
             if (dto.receiveEndMarker != null) receive.endMarker = dto.receiveEndMarker;
             receive.payload = dto.receivePayload;
+            if (dto.receiveSendStartMarker != null) receive.sendStartMarker = dto.receiveSendStartMarker;
+            if (dto.receiveSendEndMarker != null) receive.sendEndMarker = dto.receiveSendEndMarker;
         }
     }
 

@@ -7,24 +7,27 @@ import com.kgjr.uno.screens.fragments.codeHelper.model.StartNodeData;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-/** The bytes wrapped around every command sent to the board, set on the Stage 1 Start node. */
+/** The bytes wrapped around every command sent to the board, set on a Start node. */
 public final class SendFraming {
 
     private final byte[] start;
     private final byte[] end;
 
-    private SendFraming(StartNodeData data) {
-        start = Escapes.decode(data.startMarker);
-        end = Escapes.decode(data.endMarker);
+    private SendFraming(String startMarker, String endMarker) {
+        start = Escapes.decode(startMarker);
+        end = Escapes.decode(endMarker);
+    }
+
+    public static SendFraming of(String startMarker, String endMarker) {
+        return new SendFraming(startMarker, endMarker);
     }
 
     /** The parser always puts Start first; anything else falls back to the defaults. */
     public static SendFraming of(List<FlowBlock> mainTree) {
-        if (mainTree != null && !mainTree.isEmpty()
-                && mainTree.get(0).data instanceof StartNodeData) {
-            return new SendFraming((StartNodeData) mainTree.get(0).data);
-        }
-        return new SendFraming(new StartNodeData());
+        StartNodeData data = mainTree != null && !mainTree.isEmpty()
+                && mainTree.get(0).data instanceof StartNodeData
+                ? (StartNodeData) mainTree.get(0).data : new StartNodeData();
+        return new SendFraming(data.startMarker, data.endMarker);
     }
 
     public byte[] wrap(String command) {

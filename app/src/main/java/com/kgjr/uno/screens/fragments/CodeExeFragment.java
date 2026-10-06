@@ -114,14 +114,13 @@ public class CodeExeFragment extends Fragment
 
     /**
      * Stage 1 runs once; the triggers keep listening until Stop, even after it finishes. Either
-     * can be absent: a project may be all triggers, or have none.
+     * can be absent: a project may be all triggers, or have none. Each trigger frames its own
+     * commands, set on its On receive node.
      */
     private void startAll() {
-        SendFraming framing = SendFraming.of(AppConstant.flowTree);
-
         boolean mainStarted = FlowCode.hasWork(AppConstant.flowTree)
-                && runner.start(AppConstant.flowTree, framing);
-        boolean triggersStarted = triggers.start(AppConstant.triggerPrograms, framing);
+                && runner.start(AppConstant.flowTree, SendFraming.of(AppConstant.flowTree));
+        boolean triggersStarted = triggers.start(AppConstant.triggerPrograms);
 
         // Dim only once something is really under way — start() bails on an empty flow, and
         // no onStopped() follows to undo it.

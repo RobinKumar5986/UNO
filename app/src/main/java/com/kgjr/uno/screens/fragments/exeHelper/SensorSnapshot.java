@@ -10,6 +10,7 @@ import com.kgjr.uno.models.sensors.SensorToken;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowBlock;
 import com.kgjr.uno.screens.fragments.codeHelper.model.ActionNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.DecisionNodeData;
+import com.kgjr.uno.screens.fragments.codeHelper.trigger.ReceivedVars;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,6 +80,9 @@ public final class SensorSnapshot {
 
         Matcher matcher = SensorToken.PATTERN.matcher(command);
         while (matcher.find()) {
+            // Received values share the token shape but come from the board, not a sensor.
+            if (ReceivedVars.isSource(matcher.group(1))) continue;
+
             SensorToken.Resolved resolved = SensorToken.resolve(matcher);
             if (resolved != null) add(resolved.sensor, resolved.channel, seen);
         }
@@ -86,6 +90,7 @@ public final class SensorSnapshot {
 
     private void collectCondition(DecisionNodeData.Condition condition, Set<String> seen) {
         if (condition == null || !condition.isSet()) return;
+        if (ReceivedVars.isSource(condition.sensorName)) return;
 
         PhoneSensor sensor = SensorCatalog.byName(condition.sensorName);
         if (sensor == null) return;

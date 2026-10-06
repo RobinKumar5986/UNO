@@ -3,6 +3,7 @@ package com.kgjr.uno.screens.fragments.codeHelper.trigger;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowBlock;
 import com.kgjr.uno.screens.fragments.codeHelper.model.Escapes;
 import com.kgjr.uno.screens.fragments.codeHelper.model.TriggerStartData;
+import com.kgjr.uno.screens.fragments.exeHelper.SendFraming;
 
 import java.util.List;
 
@@ -16,6 +17,9 @@ public final class TriggerProgram {
     public final byte[] endMarker;
     public final List<FlowBlock> tree;
 
+    /** How this trigger's commands are framed on the way out. */
+    public final SendFraming framing;
+
     /** Expects a format that already passed {@link TriggerFormats#problemOf}. */
     public TriggerProgram(String id, String label, TriggerStartData receive, List<FlowBlock> tree) {
         this.id = id;
@@ -24,6 +28,7 @@ public final class TriggerProgram {
         this.startMarker = Escapes.decode(receive.startMarker);
         this.endMarker = Escapes.decode(receive.endMarker);
         this.tree = tree;
+        this.framing = SendFraming.of(receive.sendStartMarker, receive.sendEndMarker);
     }
 
     /** Ranks competing matches for one message: typed values, literals and markers beat loose text. */

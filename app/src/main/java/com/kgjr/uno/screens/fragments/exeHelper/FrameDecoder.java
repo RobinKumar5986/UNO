@@ -70,10 +70,6 @@ public final class FrameDecoder {
         return matches;
     }
 
-    public void reset() {
-        buffer.setLength(0);
-    }
-
     /** Index just past the earliest complete end marker, or -1 when no message is complete. */
     private int nextFinish() {
         int earliest = -1;

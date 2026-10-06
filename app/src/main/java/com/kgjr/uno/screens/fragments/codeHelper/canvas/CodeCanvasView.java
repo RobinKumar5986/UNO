@@ -56,10 +56,6 @@ public class CodeCanvasView extends View {
         return new ArrayList<>(graph.connections());
     }
 
-    public FlowDocument document() {
-        return document;
-    }
-
     /**
      * Shows another document, writing the current one back first. Loading waits for the first
      * layout when the view has no size yet, since seeding Start needs the canvas width.

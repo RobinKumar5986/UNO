@@ -56,7 +56,7 @@ public final class TriggerRunner {
     }
 
     /** False when there are no triggers, in which case no listener callback follows. */
-    public synchronized boolean start(List<TriggerProgram> programs, SendFraming framing) {
+    public synchronized boolean start(List<TriggerProgram> programs) {
         if (running.get() || programs == null || programs.isEmpty()) return false;
 
         // Fresh per run, so a worker still unwinding from the last Stop shares nothing with this one.
@@ -78,7 +78,6 @@ public final class TriggerRunner {
         List<FlowBlock> all = new ArrayList<>();
         for (TriggerProgram program : programs) all.addAll(program.tree);
         snapshot.prepare(all);
-        interpreter.setFraming(framing);
 
         synchronized (lock) {
             queue.clear();
@@ -155,6 +154,7 @@ public final class TriggerRunner {
                 log(next.program.label + " fired: " + next.values);
                 try {
                     snapshot.refresh();
+                    interpreter.setFraming(next.program.framing);
                     interpreter.run(next.program.tree, next.values);
                 } catch (RuntimeException e) {
                     log(next.program.label + " error: " + e.getMessage());

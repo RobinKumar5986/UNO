@@ -43,4 +43,6 @@ public class NodeDto {
     public String receiveStartMarker;
     public String receiveEndMarker;
     public String receivePayload;
+    public String receiveSendStartMarker;
+    public String receiveSendEndMarker;
 }
