@@ -7,6 +7,7 @@ import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.DecisionNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.EndNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.RepeatNodeData;
+import com.kgjr.uno.screens.fragments.codeHelper.model.StartNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.WaitNodeData;
 
 public class NodeDialogManager {
@@ -29,6 +30,8 @@ public class NodeDialogManager {
                 EndNodeDialog.show(context, (EndNodeData) node.data, onChanged);
                 break;
             case START:
+                StartNodeDialog.show(context, (StartNodeData) node.data, onChanged);
+                break;
             default:
                 break;
         }

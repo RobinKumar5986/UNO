@@ -14,6 +14,7 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
+import com.kgjr.uno.screens.fragments.codeHelper.model.Escapes;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -141,15 +142,16 @@ public class SerialLink implements SerialInputOutputManager.Listener {
         }
     }
 
-    public boolean write(String command) {
+    /** Writes the payload as-is; any framing is the caller's job. */
+    public boolean write(byte[] payload) {
         UsbSerialPort serialPort = port;
         if (serialPort == null) {
             log("Not connected");
             return false;
         }
         try {
-            serialPort.write((command + "\n").getBytes(StandardCharsets.UTF_8), WRITE_TIMEOUT_MS);
-            log("Sent: " + command);
+            serialPort.write(payload, WRITE_TIMEOUT_MS);
+            log("Sent: " + Escapes.visible(payload));
             return true;
         } catch (IOException e) {
             log("Write failed: " + e.getMessage());

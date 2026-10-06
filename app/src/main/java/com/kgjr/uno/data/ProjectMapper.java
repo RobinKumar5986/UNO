@@ -11,6 +11,7 @@ import com.kgjr.uno.screens.fragments.codeHelper.model.EndNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.NodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.NodeType;
 import com.kgjr.uno.screens.fragments.codeHelper.model.RepeatNodeData;
+import com.kgjr.uno.screens.fragments.codeHelper.model.StartNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.WaitNodeData;
 
 import java.util.ArrayList;
@@ -75,6 +76,11 @@ public final class ProjectMapper {
 
         } else if (node.data instanceof EndNodeData) {
             dto.endLoop = ((EndNodeData) node.data).loop;
+
+        } else if (node.data instanceof StartNodeData) {
+            StartNodeData data = (StartNodeData) node.data;
+            dto.startMarker = data.startMarker;
+            dto.endMarker = data.endMarker;
         }
         return dto;
     }
@@ -147,6 +153,11 @@ public final class ProjectMapper {
 
         } else if (data instanceof EndNodeData) {
             ((EndNodeData) data).loop = dto.endLoop;
+
+        } else if (data instanceof StartNodeData) {
+            StartNodeData start = (StartNodeData) data;
+            if (dto.startMarker != null) start.startMarker = dto.startMarker;
+            if (dto.endMarker != null) start.endMarker = dto.endMarker;
         }
     }
 

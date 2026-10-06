@@ -8,6 +8,10 @@ import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowBlock;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowCode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.ActionNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.DecisionNodeData;
+import com.kgjr.uno.screens.fragments.codeHelper.model.Escapes;
+import com.kgjr.uno.screens.fragments.codeHelper.model.StartNodeData;
+
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +38,8 @@ public final class FlowRunner {
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     private ExecutorService executor;
+    private byte[] startMarker = new byte[0];
+    private byte[] endMarker = new byte[0];
 
     public FlowRunner(SerialLink serial, SensorLiveReadingHelper sensors, Listener listener) {
         this.serial = serial;
@@ -56,6 +62,9 @@ public final class FlowRunner {
 
         // Worked out once: the flow cannot change while it runs.
         snapshot.prepare(tree);
+        StartNodeData framing = framingOf(tree);
+        startMarker = Escapes.decode(framing.startMarker);
+        endMarker = Escapes.decode(framing.endMarker);
 
         running.set(true);
         executor = Executors.newSingleThreadExecutor();
@@ -148,7 +157,7 @@ public final class FlowRunner {
 
         command = snapshot.resolveTokens(command);
 
-        if (!serial.write(command)) {
+        if (!serial.write(frame(command))) {
             // The board is gone. Clearing the flag unwinds execute() and lets start()'s wrapper
             // do the teardown, so onStopped still fires exactly once.
             log("Stopping: the board is not connected");
@@ -156,6 +165,22 @@ public final class FlowRunner {
             return;
         }
         sleep(COMMAND_GAP_MS);
+    }
+
+    private byte[] frame(String command) {
+        byte[] body = command.getBytes(StandardCharsets.UTF_8);
+        byte[] payload = new byte[startMarker.length + body.length + endMarker.length];
+
+        System.arraycopy(startMarker, 0, payload, 0, startMarker.length);
+        System.arraycopy(body, 0, payload, startMarker.length, body.length);
+        System.arraycopy(endMarker, 0, payload, startMarker.length + body.length, endMarker.length);
+        return payload;
+    }
+
+    /** The parser always puts the Start block first; fall back to the defaults if it isn't. */
+    private static StartNodeData framingOf(List<FlowBlock> tree) {
+        FlowBlock first = tree.get(0);
+        return first.data instanceof StartNodeData ? (StartNodeData) first.data : new StartNodeData();
     }
 
     private boolean evaluate(FlowBlock b) {

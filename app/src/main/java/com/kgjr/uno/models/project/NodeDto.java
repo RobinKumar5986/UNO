@@ -34,4 +34,8 @@ public class NodeDto {
     public int repeatTimes;
 
     public boolean endLoop;
+
+    /** Null in projects saved before framing was configurable; read back as the defaults. */
+    public String startMarker;
+    public String endMarker;
 }
