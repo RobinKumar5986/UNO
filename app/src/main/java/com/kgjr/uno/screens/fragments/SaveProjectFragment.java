@@ -130,8 +130,8 @@ public class SaveProjectFragment extends Fragment {
     private void bindSummary(View root) {
         TextView summary = root.findViewById(R.id.saveProjectSummary);
         summary.setText(getString(R.string.save_project_summary,
-                AppConstant.canvasNodes.size(),
-                AppConstant.canvasConnections.size(),
+                AppConstant.mainFlow.nodes.size(),
+                AppConstant.mainFlow.connections.size(),
                 AppConstant.selectedSensors.size()));
     }
 

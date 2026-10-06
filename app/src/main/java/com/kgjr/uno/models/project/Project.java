@@ -37,6 +37,9 @@ public class Project {
     public List<NodeDto> nodes = new ArrayList<>();
     public List<ConnectionDto> connections = new ArrayList<>();
 
+    /** Stage 2 flows; null in projects saved before triggers existed. */
+    public List<TriggerDto> triggers = new ArrayList<>();
+
     public boolean viewportSaved;
     public float scale = 1f;
     public float translateX;

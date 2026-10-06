@@ -41,8 +41,10 @@ public class DecisionNodeData implements NodeData {
             return "[" + sensorName + ": " + channelKey + "]";
         }
 
+        /** The value is shown as typed, so a text comparison like {@code == on} reads right. */
         public String expression() {
-            return token() + " " + operator + " " + (hasValue() ? value.trim() : "0");
+            boolean typed = value != null && !value.trim().isEmpty();
+            return token() + " " + operator + " " + (typed ? value.trim() : "0");
         }
 
         public boolean hasValue() {

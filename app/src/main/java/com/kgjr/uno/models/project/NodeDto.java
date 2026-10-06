@@ -38,4 +38,9 @@ public class NodeDto {
     /** Null in projects saved before framing was configurable; read back as the defaults. */
     public String startMarker;
     public String endMarker;
+
+    /** Set only on a trigger's Start node; a non-null payload is what marks it as one. */
+    public String receiveStartMarker;
+    public String receiveEndMarker;
+    public String receivePayload;
 }

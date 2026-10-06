@@ -3,6 +3,7 @@ package com.kgjr.uno.screens.fragments.codeHelper.canvas;
 import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.EndNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.NodeType;
+import com.kgjr.uno.screens.fragments.codeHelper.model.TriggerStartData;
 
 /** The caption a node draws, which for some types depends on its data rather than its type. */
 public final class NodeText {
@@ -18,6 +19,7 @@ public final class NodeText {
                 && ((EndNodeData) node.data).loop) {
             return "Loop";
         }
+        if (node.data instanceof TriggerStartData) return "On receive";
         return node.type.label;
     }
 }

@@ -12,6 +12,8 @@ import com.kgjr.uno.screens.fragments.codeHelper.model.EndNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.NodeType;
 import com.kgjr.uno.screens.fragments.codeHelper.model.RepeatNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.WaitNodeData;
+import com.kgjr.uno.screens.fragments.codeHelper.trigger.PayloadFormat;
+import com.kgjr.uno.screens.fragments.codeHelper.trigger.ReceivedVars;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 /**
  * Parses the canvas graph into {@link FlowBlock}s and renders them to the code string.
@@ -265,6 +268,25 @@ public final class FlowCode {
     /** Returns null when the program is runnable, otherwise the reason it isn't. */
     @Nullable
     public static String validate(String code, List<FlowBlock> blocks) {
+        return validate(code, blocks, null);
+    }
+
+    /**
+     * A trigger follows the same rules, runs once per message so it can't loop back to Start,
+     * and may only reference the values its own payload format provides.
+     */
+    @Nullable
+    public static String validateTrigger(String code, List<FlowBlock> blocks, PayloadFormat received) {
+        for (FlowBlock b : blocks) {
+            if (b.type == NodeType.REPEAT && b.forever) {
+                return "A trigger runs once per message, so its End block can't loop.";
+            }
+        }
+        return validate(code, blocks, received);
+    }
+
+    @Nullable
+    private static String validate(String code, List<FlowBlock> blocks, @Nullable PayloadFormat received) {
         if (blocks == null || blocks.isEmpty()) {
             return "Nothing to run. Add blocks and connect them to Start.";
         }
@@ -275,7 +297,7 @@ public final class FlowCode {
             return "The flow produced no code.";
         }
 
-        String blockError = checkBlocks(blocks);
+        String blockError = checkBlocks(blocks, received);
         if (blockError != null) return blockError;
 
         if (!endsProperly(blocks)) {
@@ -284,7 +306,7 @@ public final class FlowCode {
         return checkBrackets(code);
     }
 
-    private static boolean hasWork(List<FlowBlock> blocks) {
+    public static boolean hasWork(List<FlowBlock> blocks) {
         for (FlowBlock b : blocks) {
             if (b.type == NodeType.START || b.type == NodeType.END) continue;
             if (b.type == NodeType.REPEAT && b.forever) {
@@ -298,7 +320,7 @@ public final class FlowCode {
 
     /** Every block must be configured, and every nested section closed by an End block. */
     @Nullable
-    private static String checkBlocks(List<FlowBlock> blocks) {
+    private static String checkBlocks(List<FlowBlock> blocks, @Nullable PayloadFormat received) {
         for (FlowBlock b : blocks) {
             switch (b.type) {
                 case DECISION: {
@@ -306,15 +328,22 @@ public final class FlowCode {
                     if (d == null || !d.condition.isSet()) {
                         return "A Decision block has no condition. Open it and set one.";
                     }
-                    if (!d.condition.hasValue()) {
+                    String receivedError = checkReceivedCondition(d.condition, received);
+                    if (receivedError != null) return receivedError;
+
+                    boolean text = isTextValue(d.condition, received);
+                    boolean hasValue = text
+                            ? d.condition.value != null && !d.condition.value.isEmpty()
+                            : d.condition.hasValue();
+                    if (!hasValue) {
                         return "A Decision condition has no value to compare against.";
                     }
                     if (b.body.isEmpty() && b.elseBody.isEmpty()) {
                         return "A Decision block has no branches. Wire Yes or No to the next step.";
                     }
-                    String yes = checkBlocks(b.body);
+                    String yes = checkBlocks(b.body, received);
                     if (yes != null) return yes;
-                    String no = checkBlocks(b.elseBody);
+                    String no = checkBlocks(b.elseBody, received);
                     if (no != null) return no;
                     break;
                 }
@@ -324,6 +353,10 @@ public final class FlowCode {
                     boolean sendsCommand = d == null || d.mode == null || d.mode.sendsCommand();
                     if (sendsCommand && (d == null || d.command == null || d.command.trim().isEmpty())) {
                         return "An Action block has no command. Open it and set one.";
+                    }
+                    if (d != null && sendsCommand) {
+                        String tokenError = checkReceivedTokens(d.command, received);
+                        if (tokenError != null) return tokenError;
                     }
                     break;
                 }
@@ -340,13 +373,56 @@ public final class FlowCode {
                             return "A Loop block is not closed. Add an End block at the end of its body.";
                         }
                     }
-                    String nested = checkBlocks(b.body);
+                    String nested = checkBlocks(b.body, received);
                     if (nested != null) return nested;
                     break;
                 }
 
                 default:
                     break;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    private static String checkReceivedCondition(DecisionNodeData.Condition c,
+                                                 @Nullable PayloadFormat received) {
+        if (!ReceivedVars.isSource(c.sensorName)) return null;
+        if (received == null) {
+            return "Received values can only be used inside a trigger.";
+        }
+
+        int index = ReceivedVars.indexOf(c.channelKey);
+        if (index < 0 || index >= received.size()) {
+            return "A Decision uses " + c.token() + ", but the payload only has "
+                    + received.size() + " value(s).";
+        }
+        if (isTextValue(c, received) && !c.operator.equals("==") && !c.operator.equals("!=")) {
+            return "Text values can only be compared with == or !=.";
+        }
+        return null;
+    }
+
+    private static boolean isTextValue(DecisionNodeData.Condition c, @Nullable PayloadFormat received) {
+        if (received == null || !ReceivedVars.isSource(c.sensorName)) return false;
+
+        int index = ReceivedVars.indexOf(c.channelKey);
+        return index >= 0 && index < received.size()
+                && received.types().get(index) == PayloadFormat.ValueType.TEXT;
+    }
+
+    @Nullable
+    private static String checkReceivedTokens(String command, @Nullable PayloadFormat received) {
+        Matcher matcher = ReceivedVars.TOKEN.matcher(command);
+        while (matcher.find()) {
+            if (received == null) {
+                return "Received values can only be used inside a trigger.";
+            }
+            int index = ReceivedVars.indexOf(matcher);
+            if (index < 0 || index >= received.size()) {
+                return "An Action uses " + matcher.group() + ", but the payload only has "
+                        + received.size() + " value(s).";
             }
         }
         return null;

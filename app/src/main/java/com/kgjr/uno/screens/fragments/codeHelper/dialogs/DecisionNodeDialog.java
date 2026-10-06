@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -16,23 +17,15 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.kgjr.uno.AppConstant;
 import com.kgjr.uno.R;
-import com.kgjr.uno.models.sensors.ChannelKey;
-import com.kgjr.uno.models.sensors.PhoneSensor;
-import com.kgjr.uno.models.sensors.SensorCatalog;
-import com.kgjr.uno.models.sensors.SensorChannel;
 import com.kgjr.uno.screens.fragments.codeHelper.model.DecisionNodeData;
 
 import java.util.List;
 
 /**
- * DECISION node editor: a picker over {@link AppConstant#selectedSensors} and one button per
- * channel, as in the Action dialog. Tapping a channel points the node's single condition at it,
- * replacing whatever it pointed at before.
- *
- * <p>The operator buttons and the value box are always on screen — only the label above them and
- * the value itself change as channels are picked.
+ * DECISION node editor: a picker over the available value sources (selected sensors, plus the
+ * received data inside a trigger) and one button per value. Tapping a value points the node's
+ * single condition at it, replacing whatever it pointed at before.
  *
  * <p>The frame has no Done button, so every change is written into {@code data} as it happens.
  */
@@ -41,74 +34,79 @@ public class DecisionNodeDialog {
     /** Diameter of an operator button. Big enough to hit without aiming. */
     private static final int OPERATOR_SIZE_DP = 52;
 
-    public static void show(Context context, DecisionNodeData data, Runnable onChanged) {
+    private static final String[] TEXT_OPERATORS = {"==", "!="};
+
+    private static final int NUMBER_INPUT =
+            InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    | InputType.TYPE_NUMBER_FLAG_SIGNED;
+    private static final int TEXT_INPUT =
+            InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+
+    public static void show(Context context, DecisionNodeData data, FlowScope scope,
+                            Runnable onChanged) {
         Dialog dialog = NodeDialogFrame.create(context, "Decision",
                 "Which branch the flow takes when it reaches this step.",
                 R.layout.dialog_decision_node, onChanged);
 
-        bindOperators(dialog, data);
-        bindValue(dialog, data);
-        showCondition(dialog, data);
-        setUpSensorPicker(dialog, data);
+        List<ValueSource> sources = ValueSource.available(scope);
+
+        bindValue(dialog, data, false);
+        refreshCondition(dialog, data, sources);
+        setUpSourcePicker(dialog, data, sources);
 
         dialog.show();
     }
 
-    private static void setUpSensorPicker(Dialog dialog, DecisionNodeData data) {
-        MaterialAutoCompleteTextView sensorInput = dialog.findViewById(R.id.decision_sensor_input);
+    private static void setUpSourcePicker(Dialog dialog, DecisionNodeData data,
+                                          List<ValueSource> sources) {
+        MaterialAutoCompleteTextView sourceInput = dialog.findViewById(R.id.decision_sensor_input);
         LinearLayout channels = dialog.findViewById(R.id.decision_sensor_channels);
-        View sensorEmpty = dialog.findViewById(R.id.decision_sensor_empty);
-        View valuesLabel = dialog.findViewById(R.id.decision_sensor_values_label);
-        View channelsScroll = dialog.findViewById(R.id.decision_sensor_channels_scroll);
 
-        List<PhoneSensor> selected = AppConstant.selectedSensors;
-
-        if (selected.isEmpty()) {
-            sensorEmpty.setVisibility(View.VISIBLE);
+        if (sources.isEmpty()) {
+            dialog.findViewById(R.id.decision_sensor_empty).setVisibility(View.VISIBLE);
             dialog.findViewById(R.id.decision_sensor_layout).setEnabled(false);
-            sensorInput.setEnabled(false);
-            valuesLabel.setVisibility(View.GONE);
-            channelsScroll.setVisibility(View.GONE);
+            sourceInput.setEnabled(false);
+            dialog.findViewById(R.id.decision_sensor_values_label).setVisibility(View.GONE);
+            dialog.findViewById(R.id.decision_sensor_channels_scroll).setVisibility(View.GONE);
             return;
         }
 
-        String[] names = new String[selected.size()];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = selected.get(i).displayName;
-        }
+        String[] names = new String[sources.size()];
+        for (int i = 0; i < names.length; i++) names[i] = sources.get(i).displayName;
+
         // The dialog's context carries NodeDialogTheme; the host's may not be Material.
-        sensorInput.setAdapter(new ArrayAdapter<>(dialog.getContext(),
+        sourceInput.setAdapter(new ArrayAdapter<>(dialog.getContext(),
                 android.R.layout.simple_list_item_1, names));
 
-        PhoneSensor current = findByName(selected, data.sensorName);
-        if (current == null) current = selected.get(0);
+        ValueSource current = ValueSource.find(sources, data.sensorName);
+        if (current == null) current = sources.get(0);
 
         data.sensorName = current.name;
-        sensorInput.setText(current.displayName, false);
-        bindChannels(dialog, channels, current, data);
+        sourceInput.setText(current.displayName, false);
+        bindItems(dialog, channels, current, data, sources);
 
-        sensorInput.setOnItemClickListener((parent, view, position, id) -> {
-            PhoneSensor picked = selected.get(position);
+        sourceInput.setOnItemClickListener((parent, view, position, id) -> {
+            ValueSource picked = sources.get(position);
             data.sensorName = picked.name;
-            bindChannels(dialog, channels, picked, data);
+            bindItems(dialog, channels, picked, data, sources);
         });
     }
 
-    private static void bindChannels(Dialog dialog, LinearLayout container, PhoneSensor sensor,
-                                     DecisionNodeData data) {
+    private static void bindItems(Dialog dialog, LinearLayout container, ValueSource source,
+                                  DecisionNodeData data, List<ValueSource> sources) {
         container.removeAllViews();
 
         int gap = dp(container, 8);
 
-        for (int i = 0; i < sensor.channels.size(); i++) {
-            SensorChannel channel = sensor.channels.get(i);
-            TextView button = chip(container.getContext(), channel.displayName);
-            paintChip(button, isCurrent(data, sensor, channel));
+        for (int i = 0; i < source.items.size(); i++) {
+            ValueSource.Item item = source.items.get(i);
+            TextView button = chip(container.getContext(), item.label);
+            paintChip(button, isCurrent(data, source, item));
             button.setOnClickListener(v -> {
-                data.condition.pointAt(sensor.name, channel.key.wireName);
-                bindValue(dialog, data);
-                showCondition(dialog, data);
-                repaintChannels(container, data, sensor);
+                data.condition.pointAt(source.name, item.key);
+                bindValue(dialog, data, item.text);
+                refreshCondition(dialog, data, sources);
+                repaintItems(container, data, source);
             });
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -120,38 +118,44 @@ public class DecisionNodeDialog {
         }
     }
 
-    /** Marks whichever channel the condition points at, so the picker reads as a choice. */
-    private static void repaintChannels(LinearLayout container, DecisionNodeData data,
-                                        PhoneSensor sensor) {
-        for (int i = 0; i < container.getChildCount() && i < sensor.channels.size(); i++) {
+    private static void repaintItems(LinearLayout container, DecisionNodeData data,
+                                     ValueSource source) {
+        for (int i = 0; i < container.getChildCount() && i < source.items.size(); i++) {
             View child = container.getChildAt(i);
             if (child instanceof TextView) {
-                paintChip((TextView) child, isCurrent(data, sensor, sensor.channels.get(i)));
+                paintChip((TextView) child, isCurrent(data, source, source.items.get(i)));
             }
         }
     }
 
-    private static boolean isCurrent(DecisionNodeData data, PhoneSensor sensor,
-                                     SensorChannel channel) {
+    private static boolean isCurrent(DecisionNodeData data, ValueSource source,
+                                     ValueSource.Item item) {
         return data.condition.isSet()
-                && sensor.name.equals(data.condition.sensorName)
-                && channel.key.wireName.equals(data.condition.channelKey);
+                && source.name.equals(data.condition.sensorName)
+                && item.key.equals(data.condition.channelKey);
     }
 
-    /** Label, unit and the hint below them — everything that depends on the picked channel. */
-    private static void showCondition(Dialog dialog, DecisionNodeData data) {
+    /** Label, unit, operators and value type: everything that depends on the picked value. */
+    private static void refreshCondition(Dialog dialog, DecisionNodeData data,
+                                         List<ValueSource> sources) {
         TextView label = dialog.findViewById(R.id.decision_condition_label);
         TextView unit = dialog.findViewById(R.id.decision_condition_unit);
         View emptyNote = dialog.findViewById(R.id.decision_condition_empty);
 
-        SensorChannel channel = channelOf(data);
-        label.setText(channel != null ? channel.displayName : "");
-        unit.setText(channel != null ? channel.unit : "");
+        ValueSource.Item item = currentItem(data, sources);
+        boolean text = item != null && item.text;
+
+        label.setText(item != null ? item.label : "");
+        unit.setText(item != null ? item.unit : "");
         emptyNote.setVisibility(data.condition.isSet() ? View.GONE : View.VISIBLE);
+
+        if (text && !isTextOperator(data.condition.operator)) data.condition.operator = "==";
+        bindOperators(dialog, data, text);
+        setValueInputType(dialog, text);
     }
 
-    /** All four operators stay on screen; tapping one selects it and clears the rest. */
-    private static void bindOperators(Dialog dialog, DecisionNodeData data) {
+    /** All four operators stay on screen; a text value greys out the ones it can't use. */
+    private static void bindOperators(Dialog dialog, DecisionNodeData data, boolean text) {
         LinearLayout container = dialog.findViewById(R.id.decision_condition_operators);
         container.removeAllViews();
 
@@ -161,12 +165,16 @@ public class DecisionNodeDialog {
 
         for (int i = 0; i < DecisionNodeData.OPERATORS.length; i++) {
             String operator = DecisionNodeData.OPERATORS[i];
+            boolean usable = !text || isTextOperator(operator);
+
             TextView button = new TextView(container.getContext());
             button.setText(operator);
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
             button.setTypeface(button.getTypeface(), Typeface.BOLD);
             button.setGravity(Gravity.CENTER);
-            button.setClickable(true);
+            button.setClickable(usable);
+            button.setEnabled(usable);
+            button.setAlpha(usable ? 1f : 0.35f);
             paintOperator(button, operator.equals(data.condition.operator));
             buttons[i] = button;
 
@@ -184,10 +192,11 @@ public class DecisionNodeDialog {
         }
     }
 
-    private static void bindValue(Dialog dialog, DecisionNodeData data) {
+    private static void bindValue(Dialog dialog, DecisionNodeData data, boolean text) {
         EditText value = dialog.findViewById(R.id.decision_condition_value);
 
         // Set before the watcher, so restoring the stored text isn't read back as an edit.
+        setValueInputType(dialog, text);
         value.setText(data.condition.value);
         value.setSelection(value.length());
 
@@ -207,6 +216,20 @@ public class DecisionNodeDialog {
                 data.condition.value = s.toString();
             }
         });
+    }
+
+    private static void setValueInputType(Dialog dialog, boolean text) {
+        EditText value = dialog.findViewById(R.id.decision_condition_value);
+        int type = text ? TEXT_INPUT : NUMBER_INPUT;
+        if (value.getInputType() != type) value.setInputType(type);
+        value.setHint(text ? "text" : "0");
+    }
+
+    private static boolean isTextOperator(String operator) {
+        for (String allowed : TEXT_OPERATORS) {
+            if (allowed.equals(operator)) return true;
+        }
+        return false;
     }
 
     private static TextView chip(Context context, String text) {
@@ -241,21 +264,11 @@ public class DecisionNodeDialog {
         return (int) (value * view.getResources().getDisplayMetrics().density);
     }
 
-    private static SensorChannel channelOf(DecisionNodeData data) {
+    private static ValueSource.Item currentItem(DecisionNodeData data, List<ValueSource> sources) {
         if (!data.condition.isSet()) return null;
 
-        PhoneSensor sensor = SensorCatalog.byName(data.condition.sensorName);
-        if (sensor == null) return null;
-        return sensor.channel(ChannelKey.fromWireName(data.condition.channelKey));
-    }
-
-    private static PhoneSensor findByName(List<PhoneSensor> sensors, String name) {
-        if (name == null || name.isEmpty()) return null;
-
-        for (PhoneSensor sensor : sensors) {
-            if (sensor.name.equals(name)) return sensor;
-        }
-        return null;
+        ValueSource source = ValueSource.find(sources, data.condition.sensorName);
+        return source == null ? null : source.item(data.condition.channelKey);
     }
 
     private DecisionNodeDialog() {

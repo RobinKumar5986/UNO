@@ -17,7 +17,6 @@ import com.hoho.android.usbserial.util.SerialInputOutputManager;
 import com.kgjr.uno.screens.fragments.codeHelper.model.Escapes;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,6 +29,9 @@ public class SerialLink implements SerialInputOutputManager.Listener {
 
         /** The port dropped on its own — a pulled cable, a loose plug. Not a deliberate close. */
         void onDisconnected(String reason);
+
+        /** Raw bytes from the board, on the serial IO thread. */
+        void onData(byte[] data);
     }
 
     private static final String TAG = "SerialLink";
@@ -142,8 +144,8 @@ public class SerialLink implements SerialInputOutputManager.Listener {
         }
     }
 
-    /** Writes the payload as-is; any framing is the caller's job. */
-    public boolean write(byte[] payload) {
+    /** Writes the payload as-is; any framing is the caller's job. Both runners may call this. */
+    public synchronized boolean write(byte[] payload) {
         UsbSerialPort serialPort = port;
         if (serialPort == null) {
             log("Not connected");
@@ -179,7 +181,8 @@ public class SerialLink implements SerialInputOutputManager.Listener {
 
     @Override
     public void onNewData(byte[] data) {
-        log("Received: " + new String(data, StandardCharsets.UTF_8).trim());
+        log("Received: " + Escapes.visible(data));
+        if (listener != null) listener.onData(data);
     }
 
     @Override

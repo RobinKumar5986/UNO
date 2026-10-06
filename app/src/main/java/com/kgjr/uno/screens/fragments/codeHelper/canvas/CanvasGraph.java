@@ -24,6 +24,11 @@ public class CanvasGraph {
         return connections;
     }
 
+    public void clear() {
+        nodes.clear();
+        connections.clear();
+    }
+
     public void add(CanvasNode node) {
         nodes.add(node);
     }

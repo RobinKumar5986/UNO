@@ -189,6 +189,7 @@ public final class ProjectRepository {
             if (project.nodes == null) project.nodes = new ArrayList<>();
             if (project.connections == null) project.connections = new ArrayList<>();
             if (project.sensorNames == null) project.sensorNames = new ArrayList<>();
+            if (project.triggers == null) project.triggers = new ArrayList<>();
             if (project.name == null) project.name = "";
             if (project.description == null) project.description = "";
             if (project.sourceCode == null) project.sourceCode = "";

@@ -66,6 +66,17 @@
     <string name="data_view_subtitle">Lay out how your sensor data is displayed.</string>
     <string name="rail_flow">Flow canvas</string>
     <string name="rail_data">Data view</string>
+    <string name="rail_triggers">Triggers</string>
+
+    <!-- Trigger flows (Stage 2) -->
+    <string name="triggers_title">Triggers</string>
+    <string name="triggers_subtitle">Run a flow each time the board sends matching data.</string>
+    <string name="triggers_empty">No triggers yet.\nTap + to run a flow when the board sends data.</string>
+    <string name="triggers_add">Add trigger</string>
+    <string name="triggers_delete_title">Delete %1$s?</string>
+    <string name="triggers_delete_message">Its blocks and receive format will be removed.</string>
+    <string name="triggers_delete">Delete</string>
+    <string name="triggers_cancel">Cancel</string>
     <string name="data_canvas_empty">Empty canvas</string>
     <string name="data_canvas_empty_hint">Data widgets will live here.</string>
 

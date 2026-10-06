@@ -19,10 +19,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kgjr.uno.AppConstant;
 import com.kgjr.uno.R;
 import com.kgjr.uno.models.sensors.PhoneSensor;
+import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowCode;
 import com.kgjr.uno.screens.fragments.exeHelper.FlowRunner;
+import com.kgjr.uno.screens.fragments.exeHelper.SendFraming;
 import com.kgjr.uno.screens.fragments.exeHelper.SensorLiveReadingHelper;
 import com.kgjr.uno.screens.fragments.exeHelper.SensorReadoutView;
 import com.kgjr.uno.screens.fragments.exeHelper.SerialLink;
+import com.kgjr.uno.screens.fragments.exeHelper.TriggerRunner;
 import com.kgjr.uno.screens.fragments.sensorHelper.SensorPermissions;
 
 import java.util.ArrayList;
@@ -44,6 +47,7 @@ public class CodeExeFragment extends Fragment
     private SerialLink serial;
     private SensorLiveReadingHelper sensors;
     private FlowRunner runner;
+    private TriggerRunner triggers;
 
     private final List<SensorReadoutView> readouts = new ArrayList<>();
     private final Handler refreshHandler = new Handler(Looper.getMainLooper());
@@ -89,12 +93,13 @@ public class CodeExeFragment extends Fragment
 
         sensors = new SensorLiveReadingHelper(requireContext(), this::onLog);
         runner = new FlowRunner(serial, sensors, this);
+        triggers = new TriggerRunner(serial, sensors, this);
 
         buildReadouts(view);
 
         runCode.setOnClickListener(v -> {
-            if (runner.isRunning()) {
-                runner.stop();
+            if (isActive()) {
+                stopAll();
                 return;
             }
             if (!serial.isConnected()) {
@@ -103,10 +108,34 @@ public class CodeExeFragment extends Fragment
                 onLog("Connect the board over USB first");
                 return;
             }
-            // Dim only once the run is really under way — start() bails on an empty flow, and
-            // no onStopped() follows to undo it.
-            if (runner.start(AppConstant.flowTree)) runCode.setAlpha(0.5f);
+            startAll();
         });
+    }
+
+    /**
+     * Stage 1 runs once; the triggers keep listening until Stop, even after it finishes. Either
+     * can be absent: a project may be all triggers, or have none.
+     */
+    private void startAll() {
+        SendFraming framing = SendFraming.of(AppConstant.flowTree);
+
+        boolean mainStarted = FlowCode.hasWork(AppConstant.flowTree)
+                && runner.start(AppConstant.flowTree, framing);
+        boolean triggersStarted = triggers.start(AppConstant.triggerPrograms, framing);
+
+        // Dim only once something is really under way — start() bails on an empty flow, and
+        // no onStopped() follows to undo it.
+        if (mainStarted || triggersStarted) runCode.setAlpha(0.5f);
+        else onLog("Nothing to run. Build the flow or add a trigger first.");
+    }
+
+    private void stopAll() {
+        if (runner != null) runner.stop();
+        if (triggers != null) triggers.stop();
+    }
+
+    private boolean isActive() {
+        return (runner != null && runner.isRunning()) || (triggers != null && triggers.isRunning());
     }
 
     /**
@@ -222,15 +251,24 @@ public class CodeExeFragment extends Fragment
      */
     @Override
     public void onDisconnected(String reason) {
-        FlowRunner active = runner;
-        if (active != null) active.stop();
+        stopAll();
     }
 
-    /** Called from the runner's own thread, so it hops to the main looper. */
+    /** Received bytes go to the trigger runner, which ignores them unless a run is active. */
+    @Override
+    public void onData(byte[] data) {
+        TriggerRunner active = triggers;
+        if (active != null) active.onData(data);
+    }
+
+    /**
+     * Called from either runner's own thread, so it hops to the main looper. The button stays
+     * dimmed while the other one is still going.
+     */
     @Override
     public void onStopped() {
         refreshHandler.post(() -> {
-            if (runCode != null) runCode.setAlpha(1.0f);
+            if (runCode != null && !isActive()) runCode.setAlpha(1.0f);
         });
     }
 
@@ -239,16 +277,17 @@ public class CodeExeFragment extends Fragment
         refreshHandler.removeCallbacks(refreshTick);
         readouts.clear();
 
-        if (runner != null) runner.stop();
+        stopAll();
         if (sensors != null) sensors.stop();
         if (serial != null) {
             serial.unregister();
             serial.close();
         }
 
-        // All four are rebuilt in onViewCreated; holding them would pin the dead hierarchy.
+        // All of these are rebuilt in onViewCreated; holding them would pin the dead hierarchy.
         runCode = null;
         runner = null;
+        triggers = null;
         sensors = null;
         serial = null;
 

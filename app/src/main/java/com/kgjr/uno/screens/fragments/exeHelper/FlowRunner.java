@@ -1,23 +1,18 @@
 package com.kgjr.uno.screens.fragments.exeHelper;
 
-import com.kgjr.uno.models.sensors.ChannelKey;
-import com.kgjr.uno.models.sensors.PhoneSensor;
-import com.kgjr.uno.models.sensors.SensorCatalog;
-import com.kgjr.uno.models.sensors.SensorChannel;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowBlock;
-import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowCode;
-import com.kgjr.uno.screens.fragments.codeHelper.model.ActionNodeData;
-import com.kgjr.uno.screens.fragments.codeHelper.model.DecisionNodeData;
-import com.kgjr.uno.screens.fragments.codeHelper.model.Escapes;
-import com.kgjr.uno.screens.fragments.codeHelper.model.StartNodeData;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** Walks a parsed flow on a background thread, sending each Action over serial. */
+/**
+ * Runs the Stage 1 flow once, start to finish, on a background thread.
+ *
+ * <p>Every start gets its own flag, interpreter and snapshot, so a run that is still winding
+ * down after Stop (stuck in a serial write, say) can't carry on inside the next one.
+ */
 public final class FlowRunner {
 
     public interface Listener {
@@ -26,225 +21,92 @@ public final class FlowRunner {
         void onStopped();
     }
 
-    /** Breathing room for the board between two commands. */
-    private static final long COMMAND_GAP_MS = 50L;
-
-    /** Sensor readings are floats, so == and != need a tolerance rather than an exact match. */
-    private static final float EQUALITY_EPSILON = 0.001f;
-
     private final SerialLink serial;
+    private final SensorLiveReadingHelper sensors;
     private final Listener listener;
-    private final SensorSnapshot snapshot;
-    private final AtomicBoolean running = new AtomicBoolean(false);
 
+    private AtomicBoolean current;
     private ExecutorService executor;
-    private byte[] startMarker = new byte[0];
-    private byte[] endMarker = new byte[0];
 
     public FlowRunner(SerialLink serial, SensorLiveReadingHelper sensors, Listener listener) {
         this.serial = serial;
+        this.sensors = sensors;
         this.listener = listener;
-        this.snapshot = new SensorSnapshot(sensors, this::log);
     }
 
-    public boolean isRunning() {
-        return running.get();
+    public synchronized boolean isRunning() {
+        return current != null && current.get();
     }
 
     /** False when there was nothing to run, in which case no listener callback follows. */
-    public synchronized boolean start(List<FlowBlock> tree) {
-        if (running.get()) return false;
+    public synchronized boolean start(List<FlowBlock> tree, SendFraming framing) {
+        if (isRunning()) return false;
 
         if (tree == null || tree.isEmpty()) {
             log("Nothing to run. Build the flow first.");
             return false;
         }
 
+        AtomicBoolean live = new AtomicBoolean(true);
+        SensorSnapshot snapshot = new SensorSnapshot(sensors, this::log);
+        FlowInterpreter interpreter = new FlowInterpreter(serial, snapshot, live::get,
+                new FlowInterpreter.Host() {
+                    @Override
+                    public void onLog(String message) {
+                        log(message);
+                    }
+
+                    // Clearing the flag unwinds the walk; the wrapper below reports the stop.
+                    @Override
+                    public void onBoardLost() {
+                        live.set(false);
+                    }
+                });
+
         // Worked out once: the flow cannot change while it runs.
         snapshot.prepare(tree);
-        StartNodeData framing = framingOf(tree);
-        startMarker = Escapes.decode(framing.startMarker);
-        endMarker = Escapes.decode(framing.endMarker);
+        interpreter.setFraming(framing);
 
-        running.set(true);
+        current = live;
         executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             log("--- Execution started ---");
             log("Caching " + snapshot.size() + " sensor value(s) per pass");
             try {
                 snapshot.refresh();
-                execute(tree);
+                interpreter.run(tree, null);
             } catch (Exception e) {
                 log("Execution error: " + e.getMessage());
             }
-            running.set(false);
-            releaseExecutor(false);
-            log("--- Execution finished ---");
-            if (listener != null) listener.onStopped();
+            finish(live, "--- Execution finished ---", false);
         });
         return true;
     }
 
-    public synchronized void stop() {
-        boolean wasRunning = running.getAndSet(false);
-        releaseExecutor(true);
-
-        if (wasRunning) {
-            log("--- Execution stopped ---");
-            if (listener != null) listener.onStopped();
+    public void stop() {
+        AtomicBoolean live;
+        synchronized (this) {
+            live = current;
         }
+        if (live != null) finish(live, "--- Execution stopped ---", true);
     }
 
-    private synchronized void releaseExecutor(boolean interrupt) {
-        if (executor == null) return;
-        if (interrupt) executor.shutdownNow();
-        else executor.shutdown();
-        executor = null;
-    }
+    /** Whichever of the run's end or Stop gets here first reports it; the other is a no-op. */
+    private void finish(AtomicBoolean live, String message, boolean interrupt) {
+        live.set(false);
 
-    private void execute(List<FlowBlock> blocks) {
-        for (FlowBlock b : blocks) {
-            if (!running.get()) return;
-
-            switch (b.type) {
-                case ACTION:
-                    sendAction(b);
-                    break;
-
-                case WAIT:
-                    sleep(FlowCode.waitMillis(b));
-                    break;
-
-                case REPEAT:
-                    // Re-read at the top of every iteration, so one pass works off one set of
-                    // values but a loop still tracks the sensors as it goes round.
-                    if (b.forever) {
-                        while (running.get()) {
-                            snapshot.refresh();
-                            execute(b.body);
-                        }
-                    } else {
-                        int times = FlowCode.repeatTimes(b);
-                        for (int i = 0; i < times && running.get(); i++) {
-                            snapshot.refresh();
-                            execute(b.body);
-                        }
-                    }
-                    break;
-
-                case DECISION:
-                    if (evaluate(b)) execute(b.body);
-                    else execute(b.elseBody);
-                    break;
-
-                default: // START, END
-                    break;
+        synchronized (this) {
+            if (current != live) return;
+            current = null;
+            if (executor != null) {
+                if (interrupt) executor.shutdownNow();
+                else executor.shutdown();
+                executor = null;
             }
         }
-    }
 
-    private void sendAction(FlowBlock b) {
-        ActionNodeData data = b.data instanceof ActionNodeData ? (ActionNodeData) b.data : null;
-        if (data == null) return;
-
-        if (data.mode != null && !data.mode.sendsCommand()) {
-            log("Skipped: API actions are not supported yet");
-            return;
-        }
-
-        String command = data.command == null ? "" : data.command.trim();
-        if (command.isEmpty()) return;
-
-        command = snapshot.resolveTokens(command);
-
-        if (!serial.write(frame(command))) {
-            // The board is gone. Clearing the flag unwinds execute() and lets start()'s wrapper
-            // do the teardown, so onStopped still fires exactly once.
-            log("Stopping: the board is not connected");
-            running.set(false);
-            return;
-        }
-        sleep(COMMAND_GAP_MS);
-    }
-
-    private byte[] frame(String command) {
-        byte[] body = command.getBytes(StandardCharsets.UTF_8);
-        byte[] payload = new byte[startMarker.length + body.length + endMarker.length];
-
-        System.arraycopy(startMarker, 0, payload, 0, startMarker.length);
-        System.arraycopy(body, 0, payload, startMarker.length, body.length);
-        System.arraycopy(endMarker, 0, payload, startMarker.length + body.length, endMarker.length);
-        return payload;
-    }
-
-    /** The parser always puts the Start block first; fall back to the defaults if it isn't. */
-    private static StartNodeData framingOf(List<FlowBlock> tree) {
-        FlowBlock first = tree.get(0);
-        return first.data instanceof StartNodeData ? (StartNodeData) first.data : new StartNodeData();
-    }
-
-    private boolean evaluate(FlowBlock b) {
-        DecisionNodeData data = b.data instanceof DecisionNodeData ? (DecisionNodeData) b.data : null;
-        if (data == null || !data.condition.isSet()) return false;
-
-        return matches(data.condition);
-    }
-
-    private boolean matches(DecisionNodeData.Condition c) {
-        PhoneSensor sensor = SensorCatalog.byName(c.sensorName);
-        SensorChannel channel = sensor == null
-                ? null : sensor.channel(ChannelKey.fromWireName(c.channelKey));
-
-        if (channel == null) {
-            log("Unknown sensor in condition " + c.expression());
-            return false;
-        }
-
-        // This pass's cached value, so the decision agrees with any command that used the same
-        // channel earlier in the same iteration.
-        Float reading = snapshot.read(sensor, channel);
-        if (reading == null) {
-            log("No reading yet for " + c.token() + ", treated as false");
-            return false;
-        }
-
-        float left = reading;
-        float right;
-        try {
-            right = Float.parseFloat(c.value.trim());
-        } catch (NumberFormatException | NullPointerException e) {
-            log("Bad value in condition " + c.expression());
-            return false;
-        }
-
-        switch (c.operator) {
-            case "<":
-                return left < right;
-            case ">":
-                return left > right;
-            case "==":
-                return Math.abs(left - right) < EQUALITY_EPSILON;
-            case "!=":
-                return Math.abs(left - right) >= EQUALITY_EPSILON;
-            default:
-                return false;
-        }
-    }
-
-    /** Sleeps in slices so Stop takes effect without waiting out a long Wait block. */
-    private void sleep(long millis) {
-        long end = System.currentTimeMillis() + millis;
-
-        while (running.get()) {
-            long remaining = end - System.currentTimeMillis();
-            if (remaining <= 0) return;
-            try {
-                Thread.sleep(Math.min(50L, remaining));
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
+        log(message);
+        if (listener != null) listener.onStopped();
     }
 
     private void log(String message) {

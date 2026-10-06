@@ -49,10 +49,11 @@ public class StartNodeDialog {
         endInput.addTextChangedListener(watcher(refresh));
         refresh.run();
 
+        // Each setText re-reads both fields, so the defaults come from a fresh copy.
         dialog.findViewById(R.id.start_marker_reset).setOnClickListener(v -> {
-            data.reset();
-            startInput.setText(data.startMarker);
-            endInput.setText(data.endMarker);
+            StartNodeData defaults = new StartNodeData();
+            startInput.setText(defaults.startMarker);
+            endInput.setText(defaults.endMarker);
         });
 
         dialog.show();

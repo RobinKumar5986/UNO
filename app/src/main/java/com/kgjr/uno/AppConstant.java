@@ -4,8 +4,9 @@ import android.graphics.Bitmap;
 
 import com.kgjr.uno.models.sensors.PhoneSensor;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowBlock;
-import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
-import com.kgjr.uno.screens.fragments.codeHelper.model.Connection;
+import com.kgjr.uno.screens.fragments.codeHelper.model.FlowDocument;
+import com.kgjr.uno.screens.fragments.codeHelper.model.TriggerFlow;
+import com.kgjr.uno.screens.fragments.codeHelper.trigger.TriggerProgram;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,30 +19,21 @@ public class AppConstant {
     /** The same program as blocks. */
     public static List<FlowBlock> flowTree = new ArrayList<>();
 
-    /** Canvas contents, kept so the builder survives navigating away and back. */
-    public static List<CanvasNode> canvasNodes = new ArrayList<>();
-    public static List<Connection> canvasConnections = new ArrayList<>();
+    /** The Stage 1 flow canvas, kept so the builder survives navigating away and back. */
+    public static FlowDocument mainFlow = new FlowDocument();
 
-    /** Canvas viewport (pinch zoom + pan), kept so the view isn't reset on navigating back. */
-    public static boolean canvasViewportSaved = false;
-    public static float canvasScale = 1f;
-    public static float canvasTranslateX = 0f;
-    public static float canvasTranslateY = 0f;
+    /** Stage 2: flows fired by data from the board, in the order the user added them. */
+    public static List<TriggerFlow> triggers = new ArrayList<>();
+
+    /** The triggers validated by the last Next press, for the execution screen. */
+    public static List<TriggerProgram> triggerPrograms = new ArrayList<>();
 
     public static void clearCanvas() {
-        canvasNodes = new ArrayList<>();
-        canvasConnections = new ArrayList<>();
+        mainFlow = new FlowDocument();
+        triggers = new ArrayList<>();
+        triggerPrograms = new ArrayList<>();
         generatedCode = "";
         flowTree = new ArrayList<>();
-        clearCanvasViewport();
-    }
-
-    /** Drops the saved zoom/pan so the canvas opens at 1x, centred. */
-    public static void clearCanvasViewport() {
-        canvasViewportSaved = false;
-        canvasScale = 1f;
-        canvasTranslateX = 0f;
-        canvasTranslateY = 0f;
     }
 
     /**
@@ -113,7 +105,7 @@ public class AppConstant {
 
     /** A canvas with nothing but the seeded Start node, and no sensors, counts as empty. */
     public static boolean hasWorkInProgress() {
-        return canvasNodes.size() > 1 || !selectedSensors.isEmpty();
+        return !mainFlow.isEmpty() || !triggers.isEmpty() || !selectedSensors.isEmpty();
     }
 
     public static void startNewProject() {

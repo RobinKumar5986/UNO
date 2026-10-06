@@ -13,10 +13,15 @@ public final class CodeModeHelper {
 
     private static final String PREF = "editor";
     private static final String KEY_SOURCE = "source";
+    private static final String KEY_SKETCH_VERSION = "sketch_version";
+
+    /** Bump whenever DEFAULT_SKETCH changes, so the editor replaces the stored code once. */
+    public static final int DEFAULT_SKETCH_VERSION = 4;
 
     public static final String DEFAULT_SKETCH =
             "// USB serial -> 16x2 I2C LCD (PCF8574 backpack, HD44780) using raw AVR TWI registers. No Wire.h.\n"
                     + "// Address 0x27 (try 0x3F if yours differs). Whatever text arrives over serial is shown.\n"
+                    + "// Also sends \"st <n> end\" every second, n stepping by 5 and bouncing between 0 and 180.\n"
                     + "\n"
                     + "#include <avr/io.h>\n"
                     + "\n"
@@ -26,8 +31,16 @@ public final class CodeModeHelper {
                     + "#define RS_CMD 0x00\n"
                     + "#define RS_DATA 0x01\n"
                     + "\n"
+                    + "#define SEND_INTERVAL_MS 1000\n"
+                    + "#define STEP 5\n"
+                    + "#define MAX_VALUE 180\n"
+                    + "\n"
                     + "char buffer[33];\n"
                     + "byte length = 0;\n"
+                    + "\n"
+                    + "int value = 0;\n"
+                    + "int step = STEP;\n"
+                    + "unsigned long lastSend = 0;\n"
                     + "\n"
                     + "void twiInit() {\n"
                     + "  TWSR = 0x00;\n"
@@ -131,6 +144,19 @@ public final class CodeModeHelper {
                     + "  }\n"
                     + "}\n"
                     + "\n"
+                    + "// Timed with millis() rather than delay() so incoming serial is never missed.\n"
+                    + "void sendCounter() {\n"
+                    + "  if (millis() - lastSend < SEND_INTERVAL_MS) return;\n"
+                    + "  lastSend = millis();\n"
+                    + "\n"
+                    + "  Serial.print(\"st \");\n"
+                    + "  Serial.print(value);\n"
+                    + "  Serial.print(\" end\");\n"
+                    + "\n"
+                    + "  if (value + step > MAX_VALUE || value + step < 0) step = -step;\n"
+                    + "  value += step;\n"
+                    + "}\n"
+                    + "\n"
                     + "void setup() {\n"
                     + "  Serial.begin(9600);\n"
                     + "  twiInit();\n"
@@ -140,6 +166,7 @@ public final class CodeModeHelper {
                     + "\n"
                     + "void loop() {\n"
                     + "  readSerial();\n"
+                    + "  sendCounter();\n"
                     + "}\n";
 
 
@@ -185,13 +212,22 @@ public final class CodeModeHelper {
 
     public static String loadSource(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        if (prefs.getInt(KEY_SKETCH_VERSION, 0) < DEFAULT_SKETCH_VERSION) {
+            saveSource(context, DEFAULT_SKETCH);
+            return DEFAULT_SKETCH;
+        }
         return prefs.getString(KEY_SOURCE, DEFAULT_SKETCH);
     }
 
+    /**
+     * Stamps the current version too, so code written after an upgrade (e.g. a project being
+     * opened) isn't then replaced by the default on the next load.
+     */
     public static void saveSource(Context context, String source) {
         context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
                 .edit()
                 .putString(KEY_SOURCE, source)
+                .putInt(KEY_SKETCH_VERSION, DEFAULT_SKETCH_VERSION)
                 .apply();
     }
 

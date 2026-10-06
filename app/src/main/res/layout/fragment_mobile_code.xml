@@ -79,6 +79,53 @@
                 android:layout_height="match_parent"
                 android:background="@color/background_light" />
 
+            <FrameLayout
+                android:id="@+id/triggerPane"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/background_light"
+                android:visibility="gone">
+
+                <com.kgjr.uno.screens.fragments.codeHelper.canvas.CodeCanvasView
+                    android:id="@+id/trigger_canvas"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/background_light" />
+
+                <TextView
+                    android:id="@+id/triggerEmpty"
+                    style="@style/TextAppearance.UNO.Body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:lineSpacingExtra="2dp"
+                    android:paddingStart="48dp"
+                    android:paddingEnd="48dp"
+                    android:text="@string/triggers_empty"
+                    android:textColor="@color/text_secondary_light"
+                    android:visibility="gone" />
+
+                <!-- Sits right of the in-canvas palette (84dp) so it never covers a block. -->
+                <HorizontalScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|start"
+                    android:layout_marginStart="96dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="72dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/triggerChips"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+
+                </HorizontalScrollView>
+
+            </FrameLayout>
+
             <com.kgjr.uno.screens.fragments.dataHelper.canvas.DataCanvasView
                 android:id="@+id/data_canvas"
                 android:layout_width="match_parent"
@@ -108,6 +155,19 @@
                     android:padding="@dimen/canvas_rail_item_padding"
                     android:src="@drawable/ic_flow_tree"
                     app:tint="@color/accent_yellow" />
+
+                <ImageView
+                    android:id="@+id/railTriggerButton"
+                    android:layout_width="@dimen/canvas_rail_item"
+                    android:layout_height="@dimen/canvas_rail_item"
+                    android:layout_marginTop="@dimen/canvas_rail_gap"
+                    android:background="@drawable/bg_canvas_rail_item"
+                    android:clickable="true"
+                    android:contentDescription="@string/rail_triggers"
+                    android:focusable="true"
+                    android:padding="@dimen/canvas_rail_item_padding"
+                    android:src="@drawable/ic_trigger"
+                    app:tint="@color/text_secondary_dark" />
 
                 <ImageView
                     android:id="@+id/railDataButton"

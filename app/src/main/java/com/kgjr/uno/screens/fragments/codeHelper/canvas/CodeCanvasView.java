@@ -6,9 +6,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.kgjr.uno.AppConstant;
 import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.Connection;
+import com.kgjr.uno.screens.fragments.codeHelper.model.FlowDocument;
 import com.kgjr.uno.screens.fragments.codeHelper.model.NodeType;
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ public class CodeCanvasView extends View {
     private final CanvasGestureHandler gestures;
 
     private OnCanvasNodeListener listener;
+    private FlowDocument document;
     private boolean seeded;
 
     public CodeCanvasView(Context context, AttributeSet attrs) {
@@ -55,52 +56,67 @@ public class CodeCanvasView extends View {
         return new ArrayList<>(graph.connections());
     }
 
+    public FlowDocument document() {
+        return document;
+    }
+
+    /**
+     * Shows another document, writing the current one back first. Loading waits for the first
+     * layout when the view has no size yet, since seeding Start needs the canvas width.
+     */
+    public void bind(FlowDocument next) {
+        if (next == document) return;
+
+        flush();
+        document = next;
+        graph.clear();
+        transform.set(1f, 0f, 0f);
+        seeded = false;
+        if (getWidth() > 0) load();
+        invalidate();
+    }
+
+    /** Writes the graph and viewport back into the bound document. */
+    public void flush() {
+        if (document == null || !seeded) return;
+
+        document.nodes = nodes();
+        document.connections = connections();
+        document.setViewport(transform.scale(), transform.translateX(), transform.translateY());
+    }
+
     @Override
     protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
         palette.layout(height);
 
-        if (!seeded && width > 0) {
-            seeded = true;
-            restoreViewport();
-            if (!restore()) {
-                float centerX = (palette.bounds().right + width) / 2f;
-                graph.add(createNode(NodeType.START, centerX, dp(START_TOP_DP)));
-            }
+        if (!seeded && width > 0) load();
+    }
+
+    private void load() {
+        if (document == null) return;
+        seeded = true;
+
+        if (document.viewportSaved) {
+            transform.set(document.scale, document.translateX, document.translateY);
         }
-    }
 
-    /** Puts back whatever was on the canvas last time this screen was open. */
-    private boolean restore() {
-        if (AppConstant.canvasNodes.isEmpty()) return false;
+        if (document.nodes.isEmpty()) {
+            float centerX = (palette.bounds().right + getWidth()) / 2f;
+            CanvasNode start = createNode(NodeType.START, centerX, dp(START_TOP_DP));
+            start.data = document.newStartData();
+            graph.add(start);
+            return;
+        }
 
-        for (CanvasNode node : AppConstant.canvasNodes) graph.add(node);
-        for (Connection connection : AppConstant.canvasConnections) graph.connect(connection);
-        return true;
-    }
-
-    /** Puts back the zoom/pan from last time, so navigating away and back doesn't reset it. */
-    private void restoreViewport() {
-        if (!AppConstant.canvasViewportSaved) return;
-
-        transform.set(AppConstant.canvasScale,
-                AppConstant.canvasTranslateX,
-                AppConstant.canvasTranslateY);
+        for (CanvasNode node : document.nodes) graph.add(node);
+        for (Connection connection : document.connections) graph.connect(connection);
     }
 
     @Override
     protected void onDetachedFromWindow() {
-        AppConstant.canvasNodes = nodes();
-        AppConstant.canvasConnections = connections();
-        saveViewport();
+        flush();
         super.onDetachedFromWindow();
-    }
-
-    private void saveViewport() {
-        AppConstant.canvasScale = transform.scale();
-        AppConstant.canvasTranslateX = transform.translateX();
-        AppConstant.canvasTranslateY = transform.translateY();
-        AppConstant.canvasViewportSaved = true;
     }
 
     /** Builds a node of the given type centred on a world-space point. */

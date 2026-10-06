@@ -11,8 +11,7 @@ import com.kgjr.uno.models.sensors.PhoneSensor;
 import com.kgjr.uno.models.sensors.SensorCatalog;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowBlock;
 import com.kgjr.uno.screens.fragments.codeHelper.flow.FlowCode;
-import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
-import com.kgjr.uno.screens.fragments.codeHelper.model.Connection;
+import com.kgjr.uno.screens.fragments.codeHelper.model.FlowDocument;
 import com.kgjr.uno.screens.fragments.helpers.CodeModeHelper;
 
 import java.util.ArrayList;
@@ -56,18 +55,20 @@ public final class ProjectSession {
         project.sourceCode = CodeModeHelper.loadSource(context);
         project.generatedCode = currentProgram();
 
-        project.nodes = ProjectMapper.toNodeDtos(AppConstant.canvasNodes);
-        project.connections = ProjectMapper.toConnectionDtos(AppConstant.canvasConnections);
+        FlowDocument main = AppConstant.mainFlow;
+        project.nodes = ProjectMapper.toNodeDtos(main.nodes);
+        project.connections = ProjectMapper.toConnectionDtos(main.connections);
+        project.triggers = ProjectMapper.toTriggerDtos(AppConstant.triggers);
 
         project.sensorNames = new ArrayList<>();
         for (PhoneSensor sensor : AppConstant.selectedSensors) {
             if (sensor != null) project.sensorNames.add(sensor.name);
         }
 
-        project.viewportSaved = AppConstant.canvasViewportSaved;
-        project.scale = AppConstant.canvasScale;
-        project.translateX = AppConstant.canvasTranslateX;
-        project.translateY = AppConstant.canvasTranslateY;
+        project.viewportSaved = main.viewportSaved;
+        project.scale = main.scale;
+        project.translateX = main.translateX;
+        project.translateY = main.translateY;
 
         return project;
     }
@@ -97,16 +98,15 @@ public final class ProjectSession {
 
     /** Replaces the whole session, writing everything the editor reads when it starts up. */
     public static void apply(Context context, Project project) {
-        List<CanvasNode> nodes = ProjectMapper.toNodes(project.nodes);
-        List<Connection> connections = ProjectMapper.toConnections(project.connections, nodes);
-
-        AppConstant.canvasNodes = nodes;
-        AppConstant.canvasConnections = connections;
-
-        AppConstant.canvasViewportSaved = project.viewportSaved;
-        AppConstant.canvasScale = project.scale <= 0f ? 1f : project.scale;
-        AppConstant.canvasTranslateX = project.translateX;
-        AppConstant.canvasTranslateY = project.translateY;
+        FlowDocument main = new FlowDocument();
+        main.nodes = ProjectMapper.toNodes(project.nodes);
+        main.connections = ProjectMapper.toConnections(project.connections, main.nodes);
+        if (project.viewportSaved) {
+            main.setViewport(project.scale, project.translateX, project.translateY);
+        }
+        AppConstant.mainFlow = main;
+        AppConstant.triggers = ProjectMapper.toTriggers(project.triggers);
+        AppConstant.triggerPrograms = new ArrayList<>();
 
         AppConstant.selectedSensors = resolveSensors(project.sensorNames);
 
@@ -141,8 +141,8 @@ public final class ProjectSession {
      */
     private static void rebuildFlow(Project project) {
         try {
-            List<FlowBlock> tree = FlowCode.parse(AppConstant.canvasNodes,
-                    AppConstant.canvasConnections);
+            List<FlowBlock> tree = FlowCode.parse(AppConstant.mainFlow.nodes,
+                    AppConstant.mainFlow.connections);
             AppConstant.flowTree = tree;
             AppConstant.generatedCode = FlowCode.generate(tree);
         } catch (RuntimeException e) {
@@ -158,8 +158,8 @@ public final class ProjectSession {
      */
     private static String currentProgram() {
         try {
-            List<FlowBlock> tree = FlowCode.parse(AppConstant.canvasNodes,
-                    AppConstant.canvasConnections);
+            List<FlowBlock> tree = FlowCode.parse(AppConstant.mainFlow.nodes,
+                    AppConstant.mainFlow.connections);
             return FlowCode.generate(tree);
         } catch (RuntimeException e) {
             Log.w(TAG, "Canvas does not parse yet; saving without a program", e);

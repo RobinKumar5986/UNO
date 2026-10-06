@@ -2,6 +2,9 @@ package com.kgjr.uno.data;
 
 import com.kgjr.uno.models.project.ConnectionDto;
 import com.kgjr.uno.models.project.NodeDto;
+import com.kgjr.uno.models.project.TriggerDto;
+import com.kgjr.uno.screens.fragments.codeHelper.model.TriggerFlow;
+import com.kgjr.uno.screens.fragments.codeHelper.model.TriggerStartData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.ActionNodeData;
 import com.kgjr.uno.screens.fragments.codeHelper.model.CanvasNode;
 import com.kgjr.uno.screens.fragments.codeHelper.model.Connection;
@@ -81,6 +84,12 @@ public final class ProjectMapper {
             StartNodeData data = (StartNodeData) node.data;
             dto.startMarker = data.startMarker;
             dto.endMarker = data.endMarker;
+
+        } else if (node.data instanceof TriggerStartData) {
+            TriggerStartData data = (TriggerStartData) node.data;
+            dto.receiveStartMarker = data.startMarker;
+            dto.receiveEndMarker = data.endMarker;
+            dto.receivePayload = data.payload;
         }
         return dto;
     }
@@ -115,7 +124,9 @@ public final class ProjectMapper {
     public static CanvasNode toNode(NodeDto dto) {
         NodeType type = NodeType.fromName(dto.type);
 
-        NodeData data = CanvasNode.createDefaultData(type);
+        NodeData data = type == NodeType.START && dto.receivePayload != null
+                ? new TriggerStartData()
+                : CanvasNode.createDefaultData(type);
         if (data == null) data = CanvasNode.createDefaultData(NodeType.ACTION);
 
         applyData(data, dto);
@@ -158,7 +169,47 @@ public final class ProjectMapper {
             StartNodeData start = (StartNodeData) data;
             if (dto.startMarker != null) start.startMarker = dto.startMarker;
             if (dto.endMarker != null) start.endMarker = dto.endMarker;
+
+        } else if (data instanceof TriggerStartData) {
+            TriggerStartData receive = (TriggerStartData) data;
+            receive.startMarker = text(dto.receiveStartMarker);
+            if (dto.receiveEndMarker != null) receive.endMarker = dto.receiveEndMarker;
+            receive.payload = dto.receivePayload;
         }
+    }
+
+    public static List<TriggerDto> toTriggerDtos(List<TriggerFlow> triggers) {
+        List<TriggerDto> dtos = new ArrayList<>();
+        if (triggers == null) return dtos;
+
+        for (TriggerFlow trigger : triggers) {
+            TriggerDto dto = new TriggerDto();
+            dto.id = trigger.id;
+            dto.nodes = toNodeDtos(trigger.nodes);
+            dto.connections = toConnectionDtos(trigger.connections);
+            dto.viewportSaved = trigger.viewportSaved;
+            dto.scale = trigger.scale;
+            dto.translateX = trigger.translateX;
+            dto.translateY = trigger.translateY;
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    public static List<TriggerFlow> toTriggers(List<TriggerDto> dtos) {
+        List<TriggerFlow> triggers = new ArrayList<>();
+        if (dtos == null) return triggers;
+
+        for (TriggerDto dto : dtos) {
+            if (dto == null) continue;
+
+            TriggerFlow trigger = new TriggerFlow(dto.id);
+            trigger.nodes = toNodes(dto.nodes);
+            trigger.connections = toConnections(dto.connections, trigger.nodes);
+            if (dto.viewportSaved) trigger.setViewport(dto.scale, dto.translateX, dto.translateY);
+            triggers.add(trigger);
+        }
+        return triggers;
     }
 
     /**

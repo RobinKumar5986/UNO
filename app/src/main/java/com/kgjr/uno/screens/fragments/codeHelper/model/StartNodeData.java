@@ -11,13 +11,4 @@ public class StartNodeData implements NodeData {
 
     public String startMarker = DEFAULT_START_MARKER;
     public String endMarker = DEFAULT_END_MARKER;
-
-    public boolean isDefault() {
-        return DEFAULT_START_MARKER.equals(startMarker) && DEFAULT_END_MARKER.equals(endMarker);
-    }
-
-    public void reset() {
-        startMarker = DEFAULT_START_MARKER;
-        endMarker = DEFAULT_END_MARKER;
-    }
 }
