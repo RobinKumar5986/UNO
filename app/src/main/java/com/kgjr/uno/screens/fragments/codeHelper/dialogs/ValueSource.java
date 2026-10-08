@@ -48,11 +48,23 @@ final class ValueSource {
     static List<ValueSource> available(FlowScope scope) {
         List<ValueSource> sources = new ArrayList<>();
 
-        PayloadFormat format = scope.receivedFormat();
-        if (format != null) sources.add(received(format));
+        ValueSource received = received(scope);
+        if (received != null) sources.add(received);
 
+        sources.addAll(sensors());
+        return sources;
+    }
+
+    static List<ValueSource> sensors() {
+        List<ValueSource> sources = new ArrayList<>();
         for (PhoneSensor sensor : AppConstant.selectedSensors) sources.add(sensor(sensor));
         return sources;
+    }
+
+    /** The trigger's received data, or null outside a trigger or while its format is invalid. */
+    static ValueSource received(FlowScope scope) {
+        PayloadFormat format = scope.receivedFormat();
+        return format == null ? null : fromPayload(format);
     }
 
     static ValueSource find(List<ValueSource> sources, String name) {
@@ -80,7 +92,7 @@ final class ValueSource {
         return source;
     }
 
-    private static ValueSource received(PayloadFormat format) {
+    private static ValueSource fromPayload(PayloadFormat format) {
         ValueSource source = new ValueSource(ReceivedVars.SOURCE, ReceivedVars.DISPLAY_NAME);
         for (int i = 0; i < format.size(); i++) {
             PayloadFormat.ValueType type = format.types().get(i);

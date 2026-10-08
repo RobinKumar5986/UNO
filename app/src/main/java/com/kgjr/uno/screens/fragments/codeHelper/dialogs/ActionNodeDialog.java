@@ -3,6 +3,7 @@ package com.kgjr.uno.screens.fragments.codeHelper.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -11,21 +12,24 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
-import com.google.android.material.textfield.TextInputEditText;
 import com.kgjr.uno.R;
 import com.kgjr.uno.screens.fragments.codeHelper.model.ActionNodeData;
+import com.kgjr.uno.screens.fragments.codeHelper.trigger.ReceivedVars;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ACTION node editor: a mode dropdown (Command / Sensor / API) and a free-text command box.
+ * ACTION node editor: a mode dropdown (Command / Sensor / Received data / API) and a free-text
+ * command box.
  *
- * <p>Sensor mode adds a picker over the {@link ValueSource}s (selected sensors, plus received
- * data inside a trigger) and one button per value; tapping one drops its token into the command
- * at the caret. API is a stub — the section explains itself and edits nothing.
+ * <p>Sensor mode adds a picker over the selected sensors, Received data mode (offered inside a
+ * trigger) lists the values the board sent. Each shows one button per value; tapping one drops
+ * its token into the command at the caret, where {@link TokenChipEditText} shows it as a chip.
+ * API is a stub — the section explains itself and edits nothing.
  *
  * <p>The frame has no Done button, so every change is written into {@code data} as it happens
  * rather than collected on submit.
@@ -35,8 +39,9 @@ public class ActionNodeDialog {
     private static final String COMMAND_HINT =
             "Sent to the device exactly as written when the flow reaches this step.";
     private static final String SENSOR_HINT =
-            "Each [source: value] token is replaced with its live or received value before "
-                    + "the line is sent.";
+            "Each sensor token is replaced with its live value before the line is sent.";
+    private static final String RECEIVED_HINT =
+            "Each received token is replaced with the value the board sent before the line is sent.";
 
     public static void show(Context context, ActionNodeData data, FlowScope scope,
                             Runnable onChanged) {
@@ -45,16 +50,16 @@ public class ActionNodeDialog {
                 R.layout.dialog_action_node, onChanged);
 
         MaterialAutoCompleteTextView modeInput = dialog.findViewById(R.id.action_mode_input);
-        TextInputEditText commandInput = dialog.findViewById(R.id.action_command_input);
-        TextView commandHint = dialog.findViewById(R.id.action_command_hint);
-        View commandGroup = dialog.findViewById(R.id.action_command_group);
-        View sensorGroup = dialog.findViewById(R.id.action_sensor_group);
-        View apiGroup = dialog.findViewById(R.id.action_api_group);
+        TokenChipEditText commandInput = dialog.findViewById(R.id.action_command_input);
 
-        String[] labels = new String[ActionNodeData.Mode.values().length];
-        for (int i = 0; i < labels.length; i++) {
-            labels[i] = ActionNodeData.Mode.values()[i].label;
+        // Older projects stored received data as a Sensor-mode source; same command, new home.
+        if (data.mode == ActionNodeData.Mode.SENSOR && ReceivedVars.isSource(data.sensorName)) {
+            data.mode = ActionNodeData.Mode.RECEIVED;
         }
+
+        List<ActionNodeData.Mode> modes = offeredModes(data.mode, scope);
+        String[] labels = new String[modes.size()];
+        for (int i = 0; i < labels.length; i++) labels[i] = modes.get(i).label;
 
         // The dialog's context carries NodeDialogTheme; the host's may not be Material.
         modeInput.setAdapter(new ArrayAdapter<>(dialog.getContext(),
@@ -65,17 +70,21 @@ public class ActionNodeDialog {
         commandInput.setText(data.command);
         // Without this the caret sits at 0 and a channel chip would prepend its token.
         commandInput.setSelection(commandInput.length());
-        List<ValueSource> sources = ValueSource.available(scope);
-        setUpSensorPicker(dialog, data, sources, commandInput);
-        applyMode(data.mode, commandGroup, sensorGroup, apiGroup, commandHint);
+        List<ValueSource> sensors = ValueSource.sensors();
+        ValueSource received = ValueSource.received(scope);
+        setUpSensorPicker(dialog, data, sensors, commandInput);
+        setUpReceived(dialog, data, received, commandInput);
+        applyMode(dialog, data.mode);
 
         modeInput.setOnItemClickListener((parent, view, position, id) -> {
-            data.mode = ActionNodeData.Mode.values()[position];
-            // Re-run so switching into Sensor mode claims the sensor now on show.
+            data.mode = modes.get(position);
+            // Re-run so the newly shown picker claims its source.
             if (data.mode == ActionNodeData.Mode.SENSOR) {
-                setUpSensorPicker(dialog, data, sources, commandInput);
+                setUpSensorPicker(dialog, data, sensors, commandInput);
+            } else if (data.mode == ActionNodeData.Mode.RECEIVED) {
+                setUpReceived(dialog, data, received, commandInput);
             }
-            applyMode(data.mode, commandGroup, sensorGroup, apiGroup, commandHint);
+            applyMode(dialog, data.mode);
         });
 
         commandInput.addTextChangedListener(new TextWatcher() {
@@ -96,9 +105,22 @@ public class ActionNodeDialog {
         dialog.show();
     }
 
+    /** Received data only makes sense in a trigger, unless the node already uses it. */
+    private static List<ActionNodeData.Mode> offeredModes(ActionNodeData.Mode current,
+                                                          FlowScope scope) {
+        List<ActionNodeData.Mode> modes = new ArrayList<>();
+        for (ActionNodeData.Mode mode : ActionNodeData.Mode.values()) {
+            if (mode == ActionNodeData.Mode.RECEIVED && !scope.isTrigger() && current != mode) {
+                continue;
+            }
+            modes.add(mode);
+        }
+        return modes;
+    }
+
     private static void setUpSensorPicker(Dialog dialog, ActionNodeData data,
                                           List<ValueSource> sources,
-                                          TextInputEditText commandInput) {
+                                          TokenChipEditText commandInput) {
         MaterialAutoCompleteTextView sourceInput = dialog.findViewById(R.id.action_sensor_input);
         LinearLayout channels = dialog.findViewById(R.id.action_sensor_channels);
 
@@ -134,25 +156,47 @@ public class ActionNodeDialog {
         });
     }
 
+    private static void setUpReceived(Dialog dialog, ActionNodeData data, ValueSource received,
+                                      TokenChipEditText commandInput) {
+        boolean available = received != null && !received.items.isEmpty();
+
+        dialog.findViewById(R.id.action_received_empty)
+                .setVisibility(available ? View.GONE : View.VISIBLE);
+        dialog.findViewById(R.id.action_received_values_label)
+                .setVisibility(available ? View.VISIBLE : View.GONE);
+        dialog.findViewById(R.id.action_received_channels_scroll)
+                .setVisibility(available ? View.VISIBLE : View.GONE);
+        if (!available) return;
+
+        if (data.mode == ActionNodeData.Mode.RECEIVED) data.sensorName = received.name;
+        bindItems(dialog.findViewById(R.id.action_received_channels), received, commandInput);
+    }
+
     private static void bindItems(LinearLayout container, ValueSource source,
-                                  TextInputEditText commandInput) {
+                                  TokenChipEditText commandInput) {
         container.removeAllViews();
 
         float density = container.getResources().getDisplayMetrics().density;
         int paddingH = (int) (14 * density);
-        int paddingV = (int) (9 * density);
+        int paddingV = (int) (8 * density);
         int gap = (int) (8 * density);
+        int accent = TokenChipSpan.accentFor(container.getContext(), source.name);
 
         for (ValueSource.Item item : source.items) {
+            GradientDrawable background = new GradientDrawable();
+            background.setCornerRadius(100 * density);
+            background.setColor(ColorUtils.setAlphaComponent(accent, 0x26));
+            background.setStroke((int) density, ColorUtils.setAlphaComponent(accent, 0x8C));
+
             TextView button = new TextView(container.getContext());
-            button.setText(item.label);
+            button.setText("+  " + item.label);
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f);
             button.setTypeface(button.getTypeface(), Typeface.BOLD);
-            button.setTextColor(ContextCompat.getColor(container.getContext(), R.color.accent_blue));
-            button.setBackgroundResource(R.drawable.bg_channel_chip);
+            button.setTextColor(accent);
+            button.setBackground(background);
             button.setPadding(paddingH, paddingV, paddingH, paddingV);
             button.setClickable(true);
-            button.setOnClickListener(v -> insertAtCaret(commandInput, item.token));
+            button.setOnClickListener(v -> commandInput.insertToken(item.token));
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -162,31 +206,22 @@ public class ActionNodeDialog {
         }
     }
 
-    /** Drops the token in at the caret, replacing any selection, and leaves the caret after it. */
-    private static void insertAtCaret(TextInputEditText input, String token) {
-        Editable text = input.getText();
-        if (text == null) {
-            input.setText(token);
-            return;
-        }
-
-        int start = Math.max(input.getSelectionStart(), 0);
-        int end = Math.max(input.getSelectionEnd(), 0);
-
-        text.replace(Math.min(start, end), Math.max(start, end), token);
-        input.setSelection(Math.min(start, end) + token.length());
-        input.requestFocus();
-    }
-
-    private static void applyMode(ActionNodeData.Mode mode, View commandGroup, View sensorGroup,
-                                  View apiGroup, TextView commandHint) {
+    private static void applyMode(Dialog dialog, ActionNodeData.Mode mode) {
         boolean isApi = mode == ActionNodeData.Mode.API;
         boolean isSensor = mode == ActionNodeData.Mode.SENSOR;
+        boolean isReceived = mode == ActionNodeData.Mode.RECEIVED;
 
-        commandGroup.setVisibility(isApi ? View.GONE : View.VISIBLE);
-        sensorGroup.setVisibility(isSensor ? View.VISIBLE : View.GONE);
-        apiGroup.setVisibility(isApi ? View.VISIBLE : View.GONE);
-        commandHint.setText(isSensor ? SENSOR_HINT : COMMAND_HINT);
+        dialog.findViewById(R.id.action_command_group)
+                .setVisibility(isApi ? View.GONE : View.VISIBLE);
+        dialog.findViewById(R.id.action_sensor_group)
+                .setVisibility(isSensor ? View.VISIBLE : View.GONE);
+        dialog.findViewById(R.id.action_received_group)
+                .setVisibility(isReceived ? View.VISIBLE : View.GONE);
+        dialog.findViewById(R.id.action_api_group)
+                .setVisibility(isApi ? View.VISIBLE : View.GONE);
+
+        TextView hint = dialog.findViewById(R.id.action_command_hint);
+        hint.setText(isSensor ? SENSOR_HINT : isReceived ? RECEIVED_HINT : COMMAND_HINT);
     }
 
     private ActionNodeDialog() {

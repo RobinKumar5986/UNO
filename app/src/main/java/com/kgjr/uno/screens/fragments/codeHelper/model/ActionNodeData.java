@@ -5,6 +5,8 @@ public class ActionNodeData implements NodeData  {
     public enum Mode {
         COMMAND("Command"),
         SENSOR("Sensor"),
+        /** Inside a trigger: the command uses the values the board sent. */
+        RECEIVED("Received data"),
         API("API");
 
         public final String label;

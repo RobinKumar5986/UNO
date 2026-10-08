@@ -122,6 +122,53 @@
 
     </LinearLayout>
 
+    <!-- Received data mode: tap a value the trigger received to drop its token into the command -->
+    <LinearLayout
+        android:id="@+id/action_received_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/action_received_values_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:letterSpacing="0.06"
+            android:text="Received values"
+            android:textAllCaps="true"
+            android:textColor="@color/text_secondary_light"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/action_received_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="2dp"
+            android:text="This trigger has no valid payload format yet. Set one on the trigger first."
+            android:textColor="@color/accent_red"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <HorizontalScrollView
+            android:id="@+id/action_received_channels_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/action_received_channels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+
+        </HorizontalScrollView>
+
+    </LinearLayout>
+
     <!-- Command mode -->
     <LinearLayout
         android:id="@+id/action_command_group"
@@ -153,7 +200,7 @@
             app:counterEnabled="true"
             app:counterMaxLength="240">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.kgjr.uno.screens.fragments.codeHelper.dialogs.TokenChipEditText
                 android:id="@+id/action_command_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -161,6 +208,7 @@
                 android:gravity="top|start"
                 android:hint="e.g. motor.forward(120)"
                 android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
+                android:lineSpacingExtra="4dp"
                 android:maxLength="240"
                 android:minLines="4"
                 android:paddingTop="12dp"
